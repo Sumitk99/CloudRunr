@@ -73,6 +73,7 @@ func Script(srv *server.Server) {
 			return err
 		}
 		if !info.IsDir() {
+
 			files = append(files, path)
 		}
 		return nil

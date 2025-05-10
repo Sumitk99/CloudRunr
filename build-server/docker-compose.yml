@@ -1,0 +1,7 @@
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - GIT_REPOSITORY_URL=https://github.com/Sumitk99/react.git
