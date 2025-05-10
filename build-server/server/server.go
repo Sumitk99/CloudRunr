@@ -45,7 +45,7 @@ func ConnectToS3(AccessKeyID, SecretAccessKey, Endpoint, Region string) (*s3.Cli
 	return S3Client, nil
 }
 
-func UploadToS3(S3Client *s3.Client, baseDir string, Files []string) error {
+func UploadToS3(S3Client *s3.Client, baseDir, projectID string, Files []string) error {
 	start := time.Now()
 	wg := &sync.WaitGroup{}
 
@@ -88,7 +88,7 @@ func UploadToS3(S3Client *s3.Client, baseDir string, Files []string) error {
 				log.Printf("Error getting relative file path: %s\n", err)
 				return
 			}
-			objectKey := filepath.Join("react", fileName)
+			objectKey := filepath.Join(projectID, fileName)
 			log.Printf("Uploading file: %s\n", objectKey)
 
 			_, err = S3Client.PutObject(context.TODO(), &s3.PutObjectInput{
