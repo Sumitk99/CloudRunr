@@ -13,7 +13,7 @@ func main() {
 	AWSAccessKeyID := os.Getenv("AWS_ACCESS_KEY_ID")
 	AWSSecretAccessKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	AWSRegion := os.Getenv("AWS_REGION")
-	_ = os.Getenv("AWS_BUCKET_NAME")
+	//_ = os.Getenv("AWS_BUCKET_NAME")
 	AWSEndpoint := os.Getenv("AWS_ENDPOINT")
 	ProjectID := os.Getenv("PROJECT_ID")
 	if len(AWSAccessKeyID) == 0 || len(AWSSecretAccessKey) == 0 || len(AWSRegion) == 0 || len(AWSEndpoint) == 0 {

@@ -1,0 +1,7 @@
+services:
+  build-server:
+    build: .
+    environment:
+      GIT_REPOSITORY_URL : https://github.com/Sumitk99/react.git
+      PROJECT_ID : continue
+    image: sumitk999/build-server

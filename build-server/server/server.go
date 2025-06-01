@@ -3,18 +3,18 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/Sumitk99/build-server/constants"
 	"github.com/Sumitk99/build-server/helper"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
-
-	"log"
 )
 
 type Server struct {
@@ -92,7 +92,7 @@ func UploadToS3(S3Client *s3.Client, baseDir, projectID string, Files []string) 
 			log.Printf("Uploading file: %s\n", objectKey)
 
 			_, err = S3Client.PutObject(context.TODO(), &s3.PutObjectInput{
-				Bucket:      aws.String("cloud-runr"),
+				Bucket:      aws.String(constants.BUCKET_NAME),
 				Key:         aws.String(objectKey),
 				Body:        newFile,
 				ContentType: fileType,
