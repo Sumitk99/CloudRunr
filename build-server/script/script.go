@@ -2,6 +2,7 @@ package script
 
 import (
 	"fmt"
+	"github.com/Sumitk99/build-server/constants"
 	"github.com/Sumitk99/build-server/helper"
 	"github.com/Sumitk99/build-server/server"
 	_ "github.com/aws/aws-sdk-go/service/s3"
@@ -13,7 +14,7 @@ import (
 	"path/filepath"
 )
 
-func Script(srv *server.Server, projectID, framework string) {
+func Script(srv *server.Server, projectID, framework, buildDestination string) {
 
 	fmt.Print("Executing build-server script...\n")
 	currPath, err := os.Getwd()
@@ -71,7 +72,11 @@ func Script(srv *server.Server, projectID, framework string) {
 	}
 	fmt.Print("Build process completed successfully.\n")
 
-	DistFolderPath := path.Join(OutputDirPath, "dist")
+	if len(buildDestination) == 0 {
+		buildDestination = constants.DEFAULT_DIST_FOLDER
+	}
+
+	DistFolderPath := path.Join(OutputDirPath, buildDestination)
 
 	files, err := helper.GetFilePaths(DistFolderPath)
 	err = server.UploadToS3(srv.S3Client, DistFolderPath, projectID, files)

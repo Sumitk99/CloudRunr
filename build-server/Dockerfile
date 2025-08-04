@@ -1,8 +1,6 @@
 # ------------ Stage 1: Build Go binary ------------
 FROM golang:1.23.6 AS build
 WORKDIR /go/src/github.com/Sumitk99/CloudRunr/build-server
-
-# Copy all source code (backend and frontend) to the build container
 COPY . .
 RUN go mod download
 RUN GO111MODULE=on go build -o /go/bin/app .
@@ -25,13 +23,5 @@ COPY .env .
 COPY main.sh .
 RUN chmod +x main.sh
 
-# Copy all project files (including frontend and package.json) to the runtime container
-#COPY . .
-
-# Install frontend dependencies and build Angular app using local CLI
-#RUN npm install
-#RUN npx ng build --configuration=production
-
-# Set entrypoint
 ENTRYPOINT ["/home/app/main.sh"]
 

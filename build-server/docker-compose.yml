@@ -2,7 +2,8 @@ services:
   build-server:
     build: .
     environment:
-      GIT_REPOSITORY_URL : https://github.com/Sumitk99/ecom_frontend.git
-      PROJECT_ID : ang
+      GIT_REPOSITORY_URL : https://github.com/fieldmarcel/reactcounter.git
+      PROJECT_ID : counter
       FRAMEWORK : REACT
+      DEFAULT_DIST_FOLDER : build
     image: sumitk999/build-server

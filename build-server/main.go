@@ -17,6 +17,7 @@ func main() {
 	AWSEndpoint := os.Getenv("AWS_ENDPOINT")
 	ProjectID := os.Getenv("PROJECT_ID")
 	Framework := os.Getenv("FRAMEWORK")
+	DistFolder := os.Getenv("DEFAULT_DIST_FOLDER")
 	if len(AWSAccessKeyID) == 0 || len(AWSSecretAccessKey) == 0 || len(AWSRegion) == 0 || len(AWSEndpoint) == 0 {
 		log.Fatal("AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET_NAME are required")
 	}
@@ -27,5 +28,5 @@ func main() {
 	Server := &server.Server{
 		S3Client: s3,
 	}
-	script.Script(Server, ProjectID, Framework)
+	script.Script(Server, ProjectID, Framework, DistFolder)
 }
