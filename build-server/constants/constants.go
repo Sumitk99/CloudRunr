@@ -1,5 +1,5 @@
 package constants
 
 const (
-	BUCKET_NAME = "cloud-runr"
+	BUCKET_NAME = "cloudrunr"
 )

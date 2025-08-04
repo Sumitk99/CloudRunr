@@ -41,7 +41,7 @@ func ConnectToS3(AccessKeyID, SecretAccessKey, Endpoint, Region string) (*s3.Cli
 	}
 
 	S3Client := s3.NewFromConfig(S3Config)
-
+	log.Println("S3 client : ", S3Client)
 	return S3Client, nil
 }
 
@@ -72,10 +72,8 @@ func UploadToS3(S3Client *s3.Client, baseDir, projectID string, Files []string) 
 			}
 			defer newFile.Close()
 
-			// Detect file type
 			fileType := helper.GetFileType(newFile)
 
-			// Rewind file pointer for upload
 			_, err = newFile.Seek(0, io.SeekStart)
 			if err != nil {
 				log.Printf("Failed to seek file %s: %s\n", file, err)
