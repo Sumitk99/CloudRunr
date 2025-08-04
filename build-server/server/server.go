@@ -41,7 +41,6 @@ func ConnectToS3(AccessKeyID, SecretAccessKey, Endpoint, Region string) (*s3.Cli
 	}
 
 	S3Client := s3.NewFromConfig(S3Config)
-	log.Println("S3 client : ", S3Client)
 	return S3Client, nil
 }
 

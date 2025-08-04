@@ -2,6 +2,7 @@ services:
   build-server:
     build: .
     environment:
-      GIT_REPOSITORY_URL : https://github.com/fieldmarcel/reactcounter.git
-      PROJECT_ID : rsh
+      GIT_REPOSITORY_URL : https://github.com/Sumitk99/ecom_frontend.git
+      PROJECT_ID : ang
+      FRAMEWORK : REACT
     image: sumitk999/build-server

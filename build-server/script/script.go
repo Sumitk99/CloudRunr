@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 )
 
-func Script(srv *server.Server, projectID string) {
+func Script(srv *server.Server, projectID, framework string) {
 
 	fmt.Print("Executing build-server script...\n")
 	currPath, err := os.Getwd()
@@ -25,7 +25,10 @@ func Script(srv *server.Server, projectID string) {
 	OutputDirPath := filepath.Join(currPath, "output")
 	fmt.Printf("Output directory: %s\n", OutputDirPath)
 
-	process := exec.Command("bash", "-c", "npm install && npm run build")
+	buildCommand := helper.DetectBuildCommand(framework)
+	fullCommand := fmt.Sprintf("npm install && %s", buildCommand)
+	log.Println("Build Command : ", buildCommand)
+	process := exec.Command("bash", "-c", fullCommand)
 	process.Dir = OutputDirPath
 	stdout, err := process.StdoutPipe()
 	if err != nil {
@@ -67,6 +70,7 @@ func Script(srv *server.Server, projectID string) {
 		return
 	}
 	fmt.Print("Build process completed successfully.\n")
+
 	DistFolderPath := path.Join(OutputDirPath, "dist")
 
 	files, err := helper.GetFilePaths(DistFolderPath)

@@ -2,6 +2,7 @@ package helper
 
 import (
 	"fmt"
+	"github.com/Sumitk99/build-server/constants"
 	"log"
 	"net/http"
 	"os"
@@ -35,4 +36,15 @@ func GetFilePaths(DistFolderPath string) ([]string, error) {
 		return nil, err
 	}
 	return files, nil
+}
+
+func DetectBuildCommand(framework string) string {
+	switch framework {
+	case constants.REACT:
+		return constants.REACT_BUILD_COMMAND
+	case constants.ANGULAR:
+		return constants.ANGULAR_BUILD_COMMAND
+	}
+
+	return ""
 }
