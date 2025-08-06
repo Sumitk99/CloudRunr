@@ -19,7 +19,7 @@ func DeployReqHandler(ecsConfig *server.ECSClusterConfig) gin.HandlerFunc {
 			return
 		}
 		if form.GitUrl == nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Git Url"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": constants.INVALID_GITHUB_URL_MESSAGE})
 			c.Abort()
 			return
 		}
