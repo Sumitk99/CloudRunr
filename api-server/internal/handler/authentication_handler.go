@@ -1,12 +1,12 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/models"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/service"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 func SignUpHandler(srv *service.Service) gin.HandlerFunc {
@@ -49,23 +49,18 @@ func LoginHandler(srv *service.Service) gin.HandlerFunc {
 	}
 }
 
-//func GetUser() gin.HandlerFunc {
-//	return func(c *gin.Context) {
-//		userId := c.Param("user_id")
-//
-//		if err := helper.MatchUserTypeToUid(c, userId); err != nil {
-//			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//			return
-//		}
-//		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-//
-//		var user models.User
-//		err := userCollection.FindOne(ctx, bson.M{"user_id": userId}).Decode(&user) // using decode to make it string as golang doesn't understand json
-//		defer cancel()
-//		if err != nil {
-//			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-//			return
-//		}
-//		c.JSON(http.StatusOK, user)
-//	}
-//}
+func GetUser(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userEmail := c.GetString("email")
+		user, err := srv.Repo.GetUserByMail(&userEmail)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": fmt.Sprintf("Error getting user data %s\n", err.Error()),
+			})
+			c.Abort()
+			return
+		}
+		user.Password = ""
+		c.JSON(http.StatusOK, user)
+	}
+}

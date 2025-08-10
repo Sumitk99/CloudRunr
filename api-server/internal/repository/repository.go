@@ -45,7 +45,6 @@ func (repo *Repository) SignUpRepository(user *models.User) error {
 
 func (repo *Repository) GetUserByMail(email *string) (*models.User, error) {
 	githubId := new(interface{})
-	log.Println(*githubId)
 	row := repo.db.QueryRowContext(context.Background(), "SELECT user_id, name, email, password, github_id  FROM users WHERE email = $1", email)
 	user := &models.User{}
 	if err := row.Scan(&user.UserID, &user.Name, &user.Email, &user.Password, githubId); err != nil {
@@ -54,7 +53,6 @@ func (repo *Repository) GetUserByMail(email *string) (*models.User, error) {
 		}
 		return nil, err
 	}
-	log.Println(*githubId)
 	if *githubId == nil {
 		user.GithubID = ""
 	} else {
