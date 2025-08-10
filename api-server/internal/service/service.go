@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/models"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/repository"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/server"
@@ -45,4 +46,32 @@ func (srv *Service) SignUpService(req *models.SignUpReq) (*models.User, error) {
 	}
 
 	return NewUser, nil
+}
+
+func (srv *Service) LoginService(email, password *string) (*models.LoginResponse, error) {
+	user, err := srv.Repo.GetUserByMail(email)
+	if err != nil {
+		return nil, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(*password))
+	log.Println("provided : ", password)
+	log.Println("crypted : ", user.Password)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, errors.New("email or passsword is incorrect")
+	}
+
+	token, refreshtoken, err := srv.GenerateAllTokens(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.LoginResponse{
+		UserID:       &user.UserID,
+		Name:         &user.Name,
+		Email:        &user.Email,
+		GithubID:     &user.GithubID,
+		Token:        &token,
+		RefreshToken: &refreshtoken,
+	}, nil
 }

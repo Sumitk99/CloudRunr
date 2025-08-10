@@ -7,16 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
-
-func VerifyPassword(userPassword string, providedPassword string) (bool, error) {
-	err := bcrypt.CompareHashAndPassword([]byte(providedPassword), []byte(userPassword))
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
 
 func SignUpHandler(srv *service.Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -44,59 +35,19 @@ func SignUpHandler(srv *service.Service) gin.HandlerFunc {
 	}
 }
 
-//func Login() gin.HandlerFunc {
-//	return func(c *gin.Context) {
-//		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-//		defer cancel()
-//		var user models.User
-//		var foundUser models.User //to check if the person already exists in the database
-//		if err := c.BindJSON(&user); err != nil {
-//			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//			return
-//		}
-//		err := userCollection.FindOne(ctx, bson.M{"email": user.Email}).Decode(&foundUser)
-//		if err != nil {
-//			c.JSON(http.StatusInternalServerError, gin.H{"err": "User with the Provided Credentials does not exist"})
-//			return
-//		}
-//		fmt.Println(err)
-//		defer cancel()
-//		if err != nil {
-//			c.JSON(http.StatusInternalServerError, gin.H{"error": "email or password is incorrect"})
-//			return
-//		}
-//		fmt.Println(" user not found")
-//		if foundUser.Email == nil {
-//			c.JSON(http.StatusInternalServerError, gin.H{"error": "user not found"})
-//			return
-//		}
-//		fmt.Println("verifying password")
-//		passwordIsValid, msg := VerifyPassword(*user.Password, *foundUser.Password)
-//		defer cancel()
-//		fmt.Println("verified password")
-//		if passwordIsValid != true {
-//			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
-//			return
-//		}
-//
-//		token, refreshToken, _ := helper.GenerateAllTokens(
-//			*foundUser.Email,
-//			*foundUser.FirstName,
-//			*foundUser.LastName,
-//			*foundUser.UserType,
-//			*&foundUser.UserId)
-//
-//		helper.UpdateAllTokens(token, refreshToken, foundUser.UserId)
-//
-//		err = userCollection.FindOne(ctx, bson.M{"user_id": foundUser.UserId}).Decode(&foundUser)
-//
-//		if err != nil {
-//			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-//			return
-//		}
-//		c.JSON(http.StatusOK, foundUser)
-//	}
-//}
+func LoginHandler(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		req, _ := c.Get("login_req")
+		loginReq := req.(models.LoginReq)
+		user, err := srv.LoginService(loginReq.Email, loginReq.Password)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		c.JSON(http.StatusAccepted, user)
+	}
+}
 
 //func GetUser() gin.HandlerFunc {
 //	return func(c *gin.Context) {

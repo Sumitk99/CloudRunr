@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/models"
 	_ "github.com/lib/pq"
 	"log"
@@ -40,4 +41,24 @@ func (repo *Repository) SignUpRepository(user *models.User) error {
 		user.UserID, user.Email, user.Name, user.Password,
 	)
 	return err
+}
+
+func (repo *Repository) GetUserByMail(email *string) (*models.User, error) {
+	githubId := new(interface{})
+	log.Println(*githubId)
+	row := repo.db.QueryRowContext(context.Background(), "SELECT user_id, name, email, password, github_id  FROM users WHERE email = $1", email)
+	user := &models.User{}
+	if err := row.Scan(&user.UserID, &user.Name, &user.Email, &user.Password, githubId); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("No user found with this email")
+		}
+		return nil, err
+	}
+	log.Println(*githubId)
+	if *githubId == nil {
+		user.GithubID = ""
+	} else {
+		user.GithubID = (*githubId).(string)
+	}
+	return user, nil
 }

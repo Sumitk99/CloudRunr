@@ -11,14 +11,14 @@ import (
 
 func DeployReqHandler(srv *service.Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var form models.DeployReq
-		err := c.BindJSON(&form)
+		deployform, _ := c.Get("deploy_req")
 
+		form := deployform.(models.DeployReq)
 		if form.ProjectID == nil || len(*form.ProjectID) == 0 {
 			newSlug := slug.Make(*form.GitUrl)
 			form.ProjectID = &newSlug
 		}
-		err = srv.ECSClient.SpinUpContainer(form.ProjectID, form.GitUrl, form.Framework, form.DistFolder)
+		err := srv.ECSClient.SpinUpContainer(form.ProjectID, form.GitUrl, form.Framework, form.DistFolder)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, &models.DeployRes{
