@@ -80,20 +80,21 @@ func (repo *Repository) GetProjectDetails(ctx *gin.Context, projectId *string) (
 	row := repo.db.QueryRowContext(
 		ctx,
 		`SELECT project_id, user_id, github_url, name, subdomain, custom_subdomain,framework, dist_folder FROM projects WHERE user_id = $1 AND project_id = $2`,
-		user_id, projectId,
+		user_id, *projectId,
 	)
 	if row == nil {
 		return nil, errors.New(constants.NO_PROJECT_FOUND)
 	}
 
-	err := row.Scan(res.ProjectID, res.UserID, res.GitUrl, res.Name, res.SubDomain, res.CustomSubDomain, res.Framework, res.DistFolder)
+	err := row.Scan(&res.ProjectID, &res.UserID, &res.GitUrl, &res.Name, &res.SubDomain, &res.CustomSubDomain, &res.Framework, &res.DistFolder)
 	if err != nil {
 		log.Println(err.Error())
 		return nil, err
 	}
-	if user_id != *res.UserID {
+	if user_id != res.UserID {
 		return nil, errors.New(constants.UNAUTHORIZED_PROJECT_ACCESS)
 	}
+
 	return res, nil
 }
 

@@ -55,11 +55,11 @@ func (srv *Service) DeploymentService(ctx *gin.Context, projectId *string) (*str
 	newDeployId := ksuid.New().String()
 	deploymentConfig := &models.NewDeployment{
 		DeploymentID: &newDeployId,
-		GitUrl:       project.GitUrl,
-		Framework:    project.Framework,
-		DistFolder:   project.DistFolder,
-		ProjectID:    project.ProjectID,
-		RunCommand:   project.RunCommand,
+		GitUrl:       &project.GitUrl,
+		Framework:    &project.Framework,
+		DistFolder:   &project.DistFolder,
+		ProjectID:    &project.ProjectID,
+		RunCommand:   &project.RunCommand,
 	}
 	err = srv.ECSClient.SpinUpContainer(ctx, deploymentConfig)
 	if err != nil {

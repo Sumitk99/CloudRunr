@@ -30,15 +30,15 @@ type NewProjectReq struct {
 }
 
 type ProjectDetails struct {
-	UserID          *string `json:"user_id"`
-	GitUrl          *string `json:"git_url"`
-	Framework       *string `json:"framework"`
-	DistFolder      *string `json:"dist_folder"`
-	ProjectID       *string `json:"project_id"`
-	Name            *string `json:"name"`
-	RunCommand      *string `json:"run_command"`
-	SubDomain       *string `json:"subdomain,omitempty"`
-	CustomSubDomain *string `json:"custom_subdomain,omitempty"`
+	UserID          string `json:"user_id"`
+	GitUrl          string `json:"git_url"`
+	Framework       string `json:"framework"`
+	DistFolder      string `json:"dist_folder"`
+	ProjectID       string `json:"project_id"`
+	Name            string `json:"name"`
+	RunCommand      string `json:"run_command"`
+	SubDomain       any    `json:"subdomain,omitempty"`
+	CustomSubDomain any    `json:"custom_subdomain,omitempty"`
 }
 
 type NewProjectRes struct {
