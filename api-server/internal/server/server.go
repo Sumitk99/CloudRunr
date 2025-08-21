@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/constants"
+	"github.com/Sumitk99/CloudRunr/api-server/internal/models"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/gin-gonic/gin"
 	"log"
 )
 
@@ -44,23 +46,31 @@ func ConnectToECS(AccessKeyID, SecretAccessKey, Endpoint, Region string) (*ecs.C
 	return ECSClient, nil
 }
 
-func (cfg *ECSClusterConfig) SpinUpContainer(projectId, giturl, framework, default_dist_folder *string) error {
+func (cfg *ECSClusterConfig) SpinUpContainer(ctx *gin.Context, deploymentConfig *models.NewDeployment) error {
 	envOverrides := []types.KeyValuePair{
 		{
 			Name:  aws.String("GIT_REPOSITORY_URL"),
-			Value: giturl,
+			Value: deploymentConfig.GitUrl,
 		},
 		{
 			Name:  aws.String("PROJECT_ID"),
-			Value: projectId,
+			Value: deploymentConfig.ProjectID,
 		},
 		{
 			Name:  aws.String("FRAMEWORK"),
-			Value: framework,
+			Value: deploymentConfig.Framework,
 		},
 		{
 			Name:  aws.String("DEFAULT_DIST_FOLDER"),
-			Value: default_dist_folder,
+			Value: deploymentConfig.DistFolder,
+		},
+		{
+			Name:  aws.String("DEPLOYMENT_ID"),
+			Value: deploymentConfig.DeploymentID,
+		},
+		{
+			Name:  aws.String("RUN_COMMAND"),
+			Value: deploymentConfig.RunCommand,
 		},
 	}
 	containerOverride := types.ContainerOverride{
@@ -84,7 +94,7 @@ func (cfg *ECSClusterConfig) SpinUpContainer(projectId, giturl, framework, defau
 			ContainerOverrides: []types.ContainerOverride{containerOverride},
 		},
 	}
-	_, err := cfg.ECSClient.RunTask(context.Background(), runTaskInput)
+	_, err := cfg.ECSClient.RunTask(ctx, runTaskInput)
 
 	if err != nil {
 		log.Println(err.Error())

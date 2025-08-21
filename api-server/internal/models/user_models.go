@@ -18,7 +18,7 @@ type SignUpResponse struct {
 
 type LoginReq struct {
 	Email    *string `json:"email" validate:"email,required"`
-	Password *string `json:"password" validate:"required, min=6"`
+	Password *string `json:"password" validate:"required,min=6"`
 }
 
 type LoginResponse struct {
@@ -34,7 +34,7 @@ type User struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	UserID   string `json:"user_id"`
-	Password string `json:"password"`
+	Password string `json:"password,omitempty"`
 	GithubID string `json:"github_id"`
 }
 

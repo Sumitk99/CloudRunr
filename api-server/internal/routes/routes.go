@@ -13,10 +13,24 @@ func SetupRoutes(router *gin.Engine, srv *service.Service) {
 		middleware.ValidateSignUpReq(srv),
 		handler.SignUpHandler(srv),
 	)
-
 	router.POST(
-		"/deploy",
-		middleware.ValidateDeployReq,
+		"/login",
+		middleware.ValidateLoginReq(srv),
+		handler.LoginHandler(srv))
+	router.GET(
+		"/user",
+		middleware.Authenticate(),
+		handler.GetUser(srv),
+	)
+	router.POST(
+		"/project",
+		middleware.Authenticate(),
+		middleware.ValidateNewProjectReq(srv),
+		handler.NewProjectHandler(srv),
+	)
+	router.POST(
+		"/deploy/:project_id",
+		middleware.Authenticate(),
+		middleware.ValidateDeployReq(srv),
 		handler.DeployReqHandler(srv))
-
 }
