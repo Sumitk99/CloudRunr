@@ -1,23 +1,3 @@
-//package main
-//
-//import (
-//	"github.com/Sumitk99/CloudRunr/proxy-server/middleware"
-//	"github.com/gin-gonic/gin"
-//	"log"
-//)
-//
-//func main() {
-//	var router *gin.Engine = gin.New()
-//	router.Use(gin.Logger())
-//	router.Use(middleware.ProxyHandler)
-//	const PORT = "8000"
-//
-//	log.Printf("Reverse proxy running on port %s", PORT)
-//	if err := router.Run(":" + PORT); err != nil {
-//		log.Fatal(err)
-//	}
-//}
-
 package main
 
 import (
@@ -209,5 +189,8 @@ func main() {
 	fmt.Printf("📁 Serving from: %s\n", BASE_PATH)
 	fmt.Println("✅ Ready to serve SPAs with client-side routing!")
 
-	log.Fatal(r.Run(fmt.Sprintf(":%d", PORT)))
+	err := r.Run(fmt.Sprintf("0.0.0.0:8000"))
+	if err != nil {
+		log.Fatal(err)
+	}
 }

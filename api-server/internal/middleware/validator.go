@@ -14,34 +14,56 @@ import (
 
 var validate = validator.New()
 
-func ValidateDeployReq(c *gin.Context) {
-	var form models.DeployReq
-	err := c.BindJSON(&form)
-	if err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error Parsing Request"})
-		c.Abort()
-		return
-	}
-
-	if form.GitUrl == nil ||
-		(!strings.HasPrefix(*form.GitUrl, constants.GITHUB_URL_PREFIX_1) &&
-			!strings.HasPrefix(*form.GitUrl, constants.GITHUB_URL_PREFIX_2)) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": constants.INVALID_GITHUB_URL_MESSAGE})
-		c.Abort()
-		return
-	}
-
-	for _, valid := range constants.VALID_FRAMEWORKS {
-		if *form.Framework == valid {
-			c.Set("deploy_req", form)
-			c.Next()
+func ValidateDeployReq(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		projectId := c.Param("project_id")
+		if len(projectId) == 0 {
+			c.JSON(http.StatusBadRequest,
+				&models.DeployRes{
+					Status: constants.STATUS_FAILED,
+					Error:  "No projectId provided",
+				},
+			)
+			c.Abort()
 			return
 		}
+
+		c.Set("deploy_req", models.DeployReq{ProjectID: projectId})
 	}
 
-	c.Abort()
-	return
+}
+
+func ValidateNewProjectReq(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var form models.NewProjectReq
+		err := c.BindJSON(&form)
+		if err != nil {
+			log.Println(err.Error())
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Error Parsing Request"})
+			c.Abort()
+			return
+		}
+
+		if form.GitUrl == nil ||
+			(!strings.HasPrefix(*form.GitUrl, constants.GITHUB_URL_PREFIX_1) &&
+				!strings.HasPrefix(*form.GitUrl, constants.GITHUB_URL_PREFIX_2)) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": constants.INVALID_GITHUB_URL_MESSAGE})
+			c.Abort()
+			return
+		}
+
+		for _, valid := range constants.VALID_FRAMEWORKS {
+			if *form.Framework == valid {
+				c.Set("project_req", form)
+				c.Next()
+				return
+			}
+		}
+
+		c.Abort()
+		return
+
+	}
 }
 
 func ValidateSignUpReq(srv *service.Service) gin.HandlerFunc {

@@ -1,14 +1,46 @@
 package models
 
 type DeployReq struct {
-	GitUrl     *string `json:"git_url"`
-	ProjectID  *string `json:"project_id"`
-	Framework  *string `json:"framework"`
-	DistFolder *string `json:"dist_folder"`
+	ProjectID string `json:"project_id"`
 }
 
 type DeployRes struct {
-	Status string `json:"status"`
-	Error  string `json:"error"`
-	Url    string `json:"url"`
+	Status       string `json:"status"`
+	DeploymentID string `json:"deployment_id,omitempty"`
+	Error        string `json:"error,omitempty"`
+	Url          string `json:"url,omitempty"`
+}
+
+type NewDeployment struct {
+	DeploymentID *string `json:"deployment_id"`
+	GitUrl       *string `json:"git_url"`
+	Framework    *string `json:"framework"`
+	DistFolder   *string `json:"dist_folder"`
+	ProjectID    *string `json:"project_id"`
+	RunCommand   *string `json:"run_command"`
+}
+
+type NewProjectReq struct {
+	GitUrl     *string `json:"git_url"`
+	Framework  *string `json:"framework"`
+	DistFolder *string `json:"dist_folder"`
+	ProjectID  *string `json:"project_id"`
+	Name       *string `json:"name"`
+	RunCommand *string `json:"run_command"`
+}
+
+type ProjectDetails struct {
+	UserID          *string `json:"user_id"`
+	GitUrl          *string `json:"git_url"`
+	Framework       *string `json:"framework"`
+	DistFolder      *string `json:"dist_folder"`
+	ProjectID       *string `json:"project_id"`
+	Name            *string `json:"name"`
+	RunCommand      *string `json:"run_command"`
+	SubDomain       *string `json:"subdomain,omitempty"`
+	CustomSubDomain *string `json:"custom_subdomain,omitempty"`
+}
+
+type NewProjectRes struct {
+	DeploymentId string `json:"deployment_id"`
 }

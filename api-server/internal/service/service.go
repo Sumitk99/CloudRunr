@@ -1,13 +1,12 @@
 package service
 
 import (
-	"errors"
+	"github.com/Sumitk99/CloudRunr/api-server/internal/constants"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/models"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/repository"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/server"
+	"github.com/gin-gonic/gin"
 	"github.com/segmentio/ksuid"
-	"golang.org/x/crypto/bcrypt"
-	"log"
 )
 
 type Service struct {
@@ -22,56 +21,51 @@ func NewService(repo *repository.Repository, ecsConfig *server.ECSClusterConfig)
 	}
 }
 
-func HashPassword(password string) string {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-
-	if err != nil {
-		log.Panic(err)
+func (srv *Service) NewProjectService(ctx *gin.Context, project *models.NewProjectReq) (*string, error) {
+	newDeployId := ksuid.New().String()
+	go func() {
+		_ = srv.Repo.NewProjectRepository(ctx, project)
+		_ = srv.Repo.CreateNewDeployment(ctx, *project.ProjectID, newDeployId, constants.STATUS_QUEUED)
+	}()
+	//err := srv.Repo.NewProjectRepository(ctx, project)
+	//if err != nil {
+	//	return nil, err
+	//}
+	deploymentConfig := &models.NewDeployment{
+		DeploymentID: &newDeployId,
+		GitUrl:       project.GitUrl,
+		Framework:    project.Framework,
+		DistFolder:   project.DistFolder,
+		ProjectID:    project.ProjectID,
+		RunCommand:   project.RunCommand,
 	}
 
-	return string(bytes)
+	err := srv.ECSClient.SpinUpContainer(ctx, deploymentConfig)
+	if err != nil {
+		return nil, err
+	}
+	return deploymentConfig.DeploymentID, nil
 }
 
-func (srv *Service) SignUpService(req *models.SignUpReq) (*models.User, error) {
-	password := HashPassword(req.Password)
-	NewUser := &models.User{
-		UserID:   ksuid.New().String(),
-		Name:     req.Name,
-		Email:    req.Email,
-		Password: password,
-	}
-
-	if err := srv.Repo.SignUpRepository(NewUser); err != nil {
-		return nil, err
-	}
-
-	return NewUser, nil
-}
-
-func (srv *Service) LoginService(email, password *string) (*models.LoginResponse, error) {
-	user, err := srv.Repo.GetUserByMail(email)
+func (srv *Service) DeploymentService(ctx *gin.Context, projectId *string) (*string, error) {
+	project, err := srv.Repo.GetProjectDetails(ctx, projectId)
 	if err != nil {
 		return nil, err
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(*password))
-	log.Println("provided : ", password)
-	log.Println("crypted : ", user.Password)
-	if err != nil {
-		log.Println(err.Error())
-		return nil, errors.New("email or passsword is incorrect")
+	newDeployId := ksuid.New().String()
+	deploymentConfig := &models.NewDeployment{
+		DeploymentID: &newDeployId,
+		GitUrl:       project.GitUrl,
+		Framework:    project.Framework,
+		DistFolder:   project.DistFolder,
+		ProjectID:    project.ProjectID,
+		RunCommand:   project.RunCommand,
 	}
-
-	token, refreshtoken, err := srv.GenerateAllTokens(user)
+	err = srv.ECSClient.SpinUpContainer(ctx, deploymentConfig)
 	if err != nil {
 		return nil, err
 	}
-
-	return &models.LoginResponse{
-		UserID:       &user.UserID,
-		Name:         &user.Name,
-		Email:        &user.Email,
-		GithubID:     &user.GithubID,
-		Token:        &token,
-		RefreshToken: &refreshtoken,
-	}, nil
+	// SET DEPLOYMENT STATUS TO QUEUED IF SPIN UP FAILS AND PUSH THE PROJECT ID TO SQS
+	_ = srv.Repo.CreateNewDeployment(ctx, *projectId, newDeployId, constants.STATUS_QUEUED)
+	return deploymentConfig.DeploymentID, nil
 }
