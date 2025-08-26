@@ -105,6 +105,5 @@ func (repo *Repository) CreateNewDeployment(ctx *gin.Context, projectId, deploym
 		`INSERT INTO deployments (deployment_id, project_id, status) VALUES ($1, $2, $3)`,
 		deploymentId, projectId, status,
 	)
-	log.Println("dep : ", err)
 	return err
 }

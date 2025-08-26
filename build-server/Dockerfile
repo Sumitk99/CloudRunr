@@ -20,6 +20,7 @@ WORKDIR /home/app
 # Copy compiled Go binary from builder stage
 COPY --from=build /go/bin .
 COPY .env .
+COPY server/client.properties .
 COPY main.sh .
 RUN chmod +x main.sh
 

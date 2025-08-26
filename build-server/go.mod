@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.14
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.67
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.3
+	github.com/confluentinc/confluent-kafka-go/v2 v2.11.1
 	github.com/joho/godotenv v1.5.1
 )
 
@@ -27,4 +28,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.19 // indirect
 	github.com/aws/smithy-go v1.22.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	golang.org/x/crypto v0.36.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/sync v0.12.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
 )

@@ -18,6 +18,8 @@ func main() {
 	ProjectID := os.Getenv("PROJECT_ID")
 	Framework := os.Getenv("FRAMEWORK")
 	DistFolder := os.Getenv("DEFAULT_DIST_FOLDER")
+	DeploymentID := os.Getenv("DEPLOYMENT_ID")
+
 	if len(AWSAccessKeyID) == 0 || len(AWSSecretAccessKey) == 0 || len(AWSRegion) == 0 || len(AWSEndpoint) == 0 {
 		log.Fatal("AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET_NAME are required")
 	}
@@ -25,8 +27,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	Server := &server.Server{
-		S3Client: s3,
+	kafkaProducer, err := server.ReadConfig()
+	if err != nil {
+		log.Fatal(err)
 	}
-	script.Script(Server, ProjectID, Framework, DistFolder)
+	Server := &server.Server{
+		S3Client:      s3,
+		KafkaProducer: kafkaProducer,
+	}
+	cfg := script.BuildConfig{
+		ProjectID:    ProjectID,
+		DeploymentID: DeploymentID,
+		Framework:    Framework,
+		BuildFolder:  DistFolder,
+		RunCommand:   "",
+	}
+
+	script.Script(Server, cfg)
 }
