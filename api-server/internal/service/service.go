@@ -69,3 +69,13 @@ func (srv *Service) DeploymentService(ctx *gin.Context, projectId *string) (*str
 	_ = srv.Repo.CreateNewDeployment(ctx, *projectId, newDeployId, constants.STATUS_QUEUED)
 	return deploymentConfig.DeploymentID, nil
 }
+
+func (srv *Service) LogRetrievalService(ctx *gin.Context, deploymentId string, offset int) ([]models.LogData, error) {
+	userId := ctx.GetString("user_id")
+
+	logs, err := srv.Repo.LogRetrievalRepository(ctx, deploymentId, userId, offset)
+	if err != nil {
+		return nil, err
+	}
+	return logs, nil
+}

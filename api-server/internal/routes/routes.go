@@ -33,4 +33,10 @@ func SetupRoutes(router *gin.Engine, srv *service.Service) {
 		middleware.Authenticate(),
 		middleware.ValidateDeployReq(srv),
 		handler.DeployReqHandler(srv))
+
+	router.GET(
+		"/logs/:deploy_id/:offset",
+		middleware.Authenticate(),
+		middleware.ValidateLogRetrievalReq(srv),
+		handler.LogRetrievalHandler(srv))
 }

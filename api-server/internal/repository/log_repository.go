@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 	_ "github.com/lib/pq"
+	"log"
 	"time"
 )
 
@@ -22,6 +23,7 @@ func ConnectToTimescale(url string) (*pgx.Conn, error) {
 }
 
 func (repo *Repository) LogRetrievalRepository(ctx *gin.Context, deploymentId, userId string, offset int) ([]models.LogData, error) {
+	log.Println(deploymentId, offset)
 	query := `
 		SELECT p.user_id
 		FROM deployments d

@@ -51,3 +51,7 @@ type LogData struct {
 	LogStatement string    `json:"log_statement"`
 	Time         time.Time `json:"time"`
 }
+
+type LogRetrievalResponse struct {
+	Data []LogData `json:"data"`
+}

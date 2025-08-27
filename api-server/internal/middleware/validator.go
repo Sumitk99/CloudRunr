@@ -125,3 +125,22 @@ func ValidateLoginReq(srv *service.Service) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func ValidateLogRetrievalReq(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		deploymentId := c.Param("deploy_id")
+		if deploymentId == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide deployment ID"})
+			c.Abort()
+			return
+		}
+
+		offset := c.Param("offset")
+		if offset == "" {
+			offset = "1"
+		}
+		c.Set("deploy_id", deploymentId)
+		c.Set("offset", offset)
+		c.Next()
+	}
+}
