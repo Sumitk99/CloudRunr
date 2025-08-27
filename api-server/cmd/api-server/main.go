@@ -7,6 +7,7 @@ import (
 	"github.com/Sumitk99/CloudRunr/api-server/internal/server"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/service"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"os"
 	"strings"
 
@@ -37,8 +38,8 @@ func main() {
 	securityGroups := os.Getenv("SECURITY_GROUPS")
 	SecurityGroupsList := strings.Split(securityGroups, ",")
 
-	dbUrl := os.Getenv("DB_URL")
-
+	pgUrl := os.Getenv("PG_URL")
+	tsUrl := os.Getenv("TS_URL")
 	if len(AWSAccessKeyID) == 0 || len(AWSSecretAccessKey) == 0 || len(AWSRegion) == 0 || len(AWSEndpoint) == 0 {
 		log.Fatal("AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET_NAME are required")
 	}
@@ -53,11 +54,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db, err := repository.ConnectToPostgres(dbUrl)
+
+	ps, err := repository.ConnectToPostgres(pgUrl)
 	if err != nil {
-		log.Fatalf("Error connecting to database %s", err.Error())
+		log.Fatalf("Error connecting to postgres %s", err.Error())
 	}
-	newService := service.NewService(db, ecsConfig)
+	ts, err := repository.ConnectToTimescale(tsUrl)
+	repo := &repository.Repository{
+		PG: ps,
+		TS: ts,
+	}
+	newService := service.NewService(repo, ecsConfig)
 
 	routes.SetupRoutes(router, newService)
 

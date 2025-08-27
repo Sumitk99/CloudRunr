@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type DeployReq struct {
 	ProjectID string `json:"project_id"`
 }
@@ -43,4 +45,9 @@ type ProjectDetails struct {
 
 type NewProjectRes struct {
 	DeploymentId string `json:"deployment_id"`
+}
+
+type LogData struct {
+	LogStatement string    `json:"log_statement"`
+	Time         time.Time `json:"time"`
 }
