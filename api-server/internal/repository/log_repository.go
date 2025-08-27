@@ -54,11 +54,11 @@ func (repo *Repository) LogRetrievalRepository(ctx *gin.Context, deploymentId, u
 
 	var logs []models.LogData
 	for rows.Next() {
-		var log models.LogData
-		if err = rows.Scan(&log.LogStatement, &log.Time); err != nil {
+		var logData models.LogData
+		if err = rows.Scan(&logData.LogStatement, &logData.Time); err != nil {
 			return nil, err
 		}
-		logs = append(logs, log)
+		logs = append(logs, logData)
 	}
 	return logs, rows.Err()
 }

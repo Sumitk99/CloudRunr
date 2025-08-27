@@ -1,0 +1,33 @@
+<mat-toolbar class="header" #headerContainer>
+  <div class="header-container">
+    <div class="logo-section" #logoSection>
+      <img src="assets/logo.png" alt="CloudRunr Logo" class="logo">
+      <span class="brand-name">CloudRunr</span>
+    </div>
+    
+    <div class="auth-section" #authSection>
+      <button 
+        *ngIf="!isLoggedIn" 
+        mat-raised-button 
+        color="primary"
+        class="login-btn" 
+        (click)="onLoginClick($event)"
+        (mouseenter)="onButtonHover($event)"
+        (mouseleave)="onButtonLeave($event)">
+        <mat-icon>login</mat-icon>
+        Login
+      </button>
+      <button 
+        *ngIf="isLoggedIn" 
+        mat-raised-button 
+        color="accent"
+        class="profile-btn" 
+        (click)="onProfileClick($event)"
+        (mouseenter)="onButtonHover($event)"
+        (mouseleave)="onButtonLeave($event)">
+        <mat-icon>account_circle</mat-icon>
+        Profile
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
