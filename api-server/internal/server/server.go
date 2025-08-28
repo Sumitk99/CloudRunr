@@ -24,7 +24,7 @@ type ECSClusterConfig struct {
 
 func ConnectToECS(AccessKeyID, SecretAccessKey, Endpoint, Region string) (*ecs.Client, error) {
 	log.Println("Connecting to ECS : ", Endpoint, AccessKeyID, SecretAccessKey)
-	S3Config, err := config.LoadDefaultConfig(context.TODO(),
+	ECSConfig, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(Region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
 			AccessKeyID,
@@ -41,7 +41,7 @@ func ConnectToECS(AccessKeyID, SecretAccessKey, Endpoint, Region string) (*ecs.C
 		return nil, fmt.Errorf("failed to load AWS config: %w", err)
 	}
 
-	ECSClient := ecs.NewFromConfig(S3Config)
+	ECSClient := ecs.NewFromConfig(ECSConfig)
 
 	return ECSClient, nil
 }

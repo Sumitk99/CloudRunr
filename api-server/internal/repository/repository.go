@@ -77,6 +77,12 @@ func (repo *Repository) NewProjectRepository(ctx *gin.Context, project *models.N
 	return err
 }
 
+func (repo *Repository) GetUserProjects(ctx *gin.Context) []string {
+	userId := ctx.GetString("user_id")
+
+	query := `SELECT `
+}
+
 func (repo *Repository) GetProjectDetails(ctx *gin.Context, projectId *string) (*models.ProjectDetails, error) {
 	user_id := ctx.GetString("user_id")
 	res := &models.ProjectDetails{}
