@@ -1,4 +1,4 @@
-<div class="landing-page">
+<div class="landing-page page-content">
   <!-- Hero Section -->
   <section class="hero-section" #heroSection>
     <div class="hero-container">
@@ -18,7 +18,7 @@
           (click)="onGetStartedClick($event)"
           (mouseenter)="onButtonHover($event)"
           (mouseleave)="onButtonLeave($event)">
-          <mat-icon>rocket_launch</mat-icon>
+          <!-- <mat-icon>rocket_launch</mat-icon> -->
           Get Started
         </button>
         <button 
@@ -27,7 +27,7 @@
           (click)="onLearnMoreClick($event)"
           (mouseenter)="onButtonHover($event)"
           (mouseleave)="onButtonLeave($event)">
-          <mat-icon>info</mat-icon>
+          <!-- <mat-icon>info</mat-icon> -->
           Learn More
         </button>
       </div>
@@ -55,7 +55,7 @@
                  (mouseenter)="onCardHover($event)"
                  (mouseleave)="onCardLeave($event)">
           <div class="card-icon">
-            <mat-icon>speed</mat-icon>
+            <mat-icon fontIcon="home">speed</mat-icon>
           </div>
           <h3>Lightning Fast</h3>
           <p>Deploy your applications in seconds with our optimized build pipeline and global CDN.</p>

@@ -85,6 +85,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.authService.logout();
   }
 
+  onLogoClick(): void {
+    this.router.navigate(['/']);
+  }
+
   // Hover animations
   onButtonHover(event: any): void {
     gsap.to(event.target, { scale: 1.05, duration: 0.2, ease: "power2.out" });

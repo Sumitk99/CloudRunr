@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export interface User {
   name: string;
@@ -32,7 +34,10 @@ export class AuthService {
   private readonly USER_KEY = 'cloudrunr_user';
   private readonly TOKEN_KEY = 'cloudrunr_token';
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {
     this.loadUserFromStorage();
   }
 
@@ -65,22 +70,48 @@ export class AuthService {
 
   async login(credentials: LoginRequest): Promise<User> {
     try {
-      // TODO: Replace with actual API call
-      const response = await this.mockLoginAPI(credentials);
-      this.setUser(response);
-      return response;
+      const response = await this.http.post<User>(
+        `${environment.backendUrl}${environment.apiEndpoints.login}`,
+        credentials,
+        {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json'
+          })
+        }
+      ).toPromise();
+
+      if (response) {
+        this.setUser(response);
+        return response;
+      } else {
+        throw new Error('No response from server');
+      }
     } catch (error) {
+      console.error('Login error:', error);
       throw error;
     }
   }
 
   async signup(userData: SignupRequest): Promise<User> {
     try {
-      // TODO: Replace with actual API call
-      const response = await this.mockSignupAPI(userData);
-      this.setUser(response);
-      return response;
+      const response = await this.http.post<User>(
+        `${environment.backendUrl}${environment.apiEndpoints.signup}`,
+        userData,
+        {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json'
+          })
+        }
+      ).toPromise();
+
+      if (response) {
+        this.setUser(response);
+        return response;
+      } else {
+        throw new Error('No response from server');
+      }
     } catch (error) {
+      console.error('Signup error:', error);
       throw error;
     }
   }
@@ -102,33 +133,12 @@ export class AuthService {
     this.currentUserSubject.next(null);
   }
 
-  // Mock API calls - Replace with actual backend calls
-  private async mockLoginAPI(credentials: LoginRequest): Promise<User> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock response
-    return {
-      name: "Demo User",
-      email: credentials.email,
-      user_id: "31tvhGjSCAl7TRG0eMAetSA33Ym",
-      token: "mock_jwt_token_" + Date.now(),
-      refresh_token: "mock_refresh_token_" + Date.now(),
-      github_id: ""
-    };
-  }
-
-  private async mockSignupAPI(userData: SignupRequest): Promise<User> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock response
-    return {
-      name: userData.name,
-      email: userData.email,
-      user_id: "31tvhGjSCAl7TRG0eMAetSA33Ym",
-      token: "mock_jwt_token_" + Date.now(),
-      refresh_token: "mock_refresh_token_" + Date.now()
-    };
+  // Helper method to create auth headers for future API calls
+  getAuthHeaders(): HttpHeaders {
+    const token = this.getToken();
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
   }
 }

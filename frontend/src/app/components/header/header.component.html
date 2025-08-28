@@ -1,6 +1,6 @@
 <mat-toolbar class="header" #headerContainer>
   <div class="header-container">
-    <div class="logo-section" #logoSection>
+    <div class="logo-section" #logoSection (click)="onLogoClick()" tabindex="0" aria-label="CloudRunr Home">
       <img src="assets/logo.png" alt="CloudRunr Logo" class="logo">
       <span class="brand-name">CloudRunr</span>
     </div>
