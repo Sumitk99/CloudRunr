@@ -4,12 +4,15 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { gsap } from 'gsap';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatToolbarModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatToolbarModule, MatMenuModule, MatDividerModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
@@ -18,12 +21,20 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild('logoSection') logoSection!: ElementRef;
   @ViewChild('authSection') authSection!: ElementRef;
   
-  isLoggedIn = false; // This will be replaced with actual auth service later
+  isLoggedIn = false;
+  currentUser: User | null = null;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    // Initialize any component logic
+    // Subscribe to auth state changes
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isLoggedIn = !!user;
+    });
   }
 
   ngAfterViewInit(): void {
@@ -55,7 +66,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     const target = event.target as HTMLElement;
     gsap.to(target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
     setTimeout(() => {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/auth']);
     }, 200);
   }
 
@@ -63,8 +74,15 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     // Add click animation
     const target = event.target as HTMLElement;
     gsap.to(target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
-    // Will implement profile page later
-    console.log('Profile clicked');
+  }
+
+  onProjectsClick(): void {
+    // Will implement projects page later
+    console.log('Projects clicked');
+  }
+
+  onLogoutClick(): void {
+    this.authService.logout();
   }
 
   // Hover animations

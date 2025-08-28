@@ -1,0 +1,39 @@
+<div class="auth-page" #authContainer>
+  <div class="auth-background">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+  </div>
+
+  <div class="auth-content">
+    <mat-card class="auth-card" #authCard>
+      <div class="auth-header">
+        <div class="logo-section">
+          <img src="assets/logo.png" alt="CloudRunr Logo" class="logo">
+          <span class="brand-name">CloudRunr</span>
+        </div>
+        <h1>Authentication</h1>
+        <p>Sign in or create your account to get started</p>
+      </div>
+
+      <mat-tab-group 
+        class="auth-tabs" 
+        #tabsContainer
+        (selectedTabChange)="onTabChange($event.index)"
+        (mouseenter)="onCardHover($event)"
+        (mouseleave)="onCardLeave($event)">
+        
+        <mat-tab label="Sign In">
+          <app-login></app-login>
+        </mat-tab>
+        
+        <mat-tab label="Sign Up">
+          <app-signup></app-signup>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
+  </div>
+</div>

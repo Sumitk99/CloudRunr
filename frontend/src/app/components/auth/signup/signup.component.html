@@ -1,0 +1,90 @@
+<div class="signup-container" #signupForm>
+  <div class="signup-header">
+    <h2>Create Account</h2>
+    <p>Join CloudRunr and deploy your frontend instantly</p>
+  </div>
+
+  <form [formGroup]="signupFormGroup" (ngSubmit)="onSubmit()" class="signup-form">
+    <mat-form-field appearance="outline" class="form-field" #nameField>
+      <mat-label>Full Name</mat-label>
+      <input 
+        matInput 
+        formControlName="name" 
+        type="text" 
+        placeholder="Enter your full name"
+        (mouseenter)="onFieldHover($event)"
+        (mouseleave)="onFieldLeave($event)">
+      <mat-icon matSuffix>person</mat-icon>
+      <mat-error *ngIf="signupFormGroup.get('name')?.hasError('required')">
+        Name is required
+      </mat-error>
+      <mat-error *ngIf="signupFormGroup.get('name')?.hasError('minlength')">
+        Name must be at least 2 characters
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field" #emailField>
+      <mat-label>Email</mat-label>
+      <input 
+        matInput 
+        formControlName="email" 
+        type="email" 
+        placeholder="Enter your email"
+        (mouseenter)="onFieldHover($event)"
+        (mouseleave)="onFieldLeave($event)">
+      <mat-icon matSuffix>email</mat-icon>
+      <mat-error *ngIf="signupFormGroup.get('email')?.hasError('required')">
+        Email is required
+      </mat-error>
+      <mat-error *ngIf="signupFormGroup.get('email')?.hasError('email')">
+        Please enter a valid email
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field" #passwordField>
+      <mat-label>Password</mat-label>
+      <input 
+        matInput 
+        formControlName="password" 
+        [type]="hidePassword ? 'password' : 'text'"
+        placeholder="Create a strong password"
+        (mouseenter)="onFieldHover($event)"
+        (mouseleave)="onFieldLeave($event)">
+      <button 
+        mat-icon-button 
+        matSuffix 
+        (click)="hidePassword = !hidePassword" 
+        [attr.aria-label]="'Hide password'" 
+        [attr.aria-pressed]="hidePassword">
+        <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
+      <mat-error *ngIf="signupFormGroup.get('password')?.hasError('required')">
+        Password is required
+      </mat-error>
+      <mat-error *ngIf="signupFormGroup.get('password')?.hasError('minlength')">
+        Password must be at least 6 characters
+      </mat-error>
+    </mat-form-field>
+
+    <button 
+      mat-raised-button 
+      color="primary" 
+      type="submit" 
+      class="submit-btn"
+      [disabled]="signupFormGroup.invalid || isLoading"
+      (mouseenter)="onButtonHover($event)"
+      (mouseleave)="onButtonLeave($event)"
+      #submitButton>
+      <mat-spinner 
+        *ngIf="isLoading" 
+        diameter="20" 
+        class="spinner">
+      </mat-spinner>
+      <span *ngIf="!isLoading">Create Account</span>
+    </button>
+  </form>
+
+  <div class="signup-footer">
+    <p>Already have an account? <a href="#" class="link">Sign in</a></p>
+  </div>
+</div>

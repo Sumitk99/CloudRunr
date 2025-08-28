@@ -17,17 +17,31 @@
         <mat-icon>login</mat-icon>
         Login
       </button>
+      
       <button 
         *ngIf="isLoggedIn" 
         mat-raised-button 
         color="accent"
         class="profile-btn" 
+        [matMenuTriggerFor]="profileMenu"
         (click)="onProfileClick($event)"
         (mouseenter)="onButtonHover($event)"
         (mouseleave)="onButtonLeave($event)">
         <mat-icon>account_circle</mat-icon>
-        Profile
+        {{ currentUser?.name || 'Profile' }}
       </button>
+      
+      <mat-menu #profileMenu="matMenu" class="profile-menu">
+        <button mat-menu-item (click)="onProjectsClick()">
+          <mat-icon>folder</mat-icon>
+          <span>Projects</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="onLogoutClick()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
     </div>
   </div>
 </mat-toolbar>

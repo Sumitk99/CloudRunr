@@ -94,6 +94,49 @@
   }
 }
 
+.profile-menu {
+  ::ng-deep {
+    .mat-mdc-menu-panel {
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(20px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+      overflow: hidden;
+      
+      .mat-mdc-menu-content {
+        padding: 8px 0;
+        
+        .mat-mdc-menu-item {
+          color: #333 !important;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          
+          &:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+          }
+          
+          .mat-mdc-menu-item-text {
+            span {
+              margin-left: 8px;
+            }
+          }
+          
+          .mat-icon {
+            color: #667eea;
+          }
+        }
+        
+        .mat-divider {
+          margin: 8px 0;
+          border-color: rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+  }
+}
+
 // Responsive design
 @media (max-width: 768px) {
   .header-container {
