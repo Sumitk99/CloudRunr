@@ -156,6 +156,12 @@ export class ProjectDetailComponent implements OnInit, AfterViewInit {
     window.open(url, '_blank');
   }
 
+  openSubdomain(): void {
+    if (this.projectDetail?.subdomain) {
+      window.open(`http://${this.projectDetail.subdomain}`, '_blank');
+    }
+  }
+
   goBack(): void {
     this.router.navigate(['/projects']);
   }
