@@ -1,0 +1,48 @@
+<div class="page-content">
+  <mat-card class="new-project-card" #card>
+    <div class="header">
+      <h2>New Project</h2>
+      <p>Connect your repository and configure build settings</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" #formEl class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>GitHub URL</mat-label>
+        <input matInput formControlName="git_url" placeholder="https://github.com/user/repo">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Framework</mat-label>
+        <mat-select formControlName="framework">
+          <mat-option *ngFor="let fw of frameworks" [value]="fw.value">{{fw.label}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Dist Folder</mat-label>
+        <input matInput formControlName="dist_folder" placeholder="dist or build">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Project ID</mat-label>
+        <input matInput formControlName="project_id" placeholder="unique-project-id">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Project Name</mat-label>
+        <input matInput formControlName="name" placeholder="My Awesome App">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Run Command (optional)</mat-label>
+        <input matInput formControlName="run_command" placeholder="npm run build">
+      </mat-form-field>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" [disabled]="form.invalid || isLoading">
+          {{ isLoading ? 'Creating...' : 'Create Project' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>

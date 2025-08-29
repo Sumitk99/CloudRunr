@@ -48,3 +48,15 @@ func NewProjectHandler(srv *service.Service) gin.HandlerFunc {
 		})
 	}
 }
+
+func GetUserProjectsHandler(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		res, err := srv.GetUserProjectsService(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"projects": res})
+	}
+}

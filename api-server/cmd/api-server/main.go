@@ -6,10 +6,12 @@ import (
 	"github.com/Sumitk99/CloudRunr/api-server/internal/routes"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/server"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/service"
+	"github.com/gin-contrib/cors"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"log"
@@ -21,6 +23,16 @@ func main() {
 	var router *gin.Engine = gin.New()
 	router.Use(gin.Logger())
 	err := godotenv.Load()
+
+	corsPolicy := cors.Config{
+		AllowOrigins:     []string{"http://localhost:4200"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "token"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+	router.Use(cors.New(corsPolicy))
 	if err != nil {
 		log.Fatal("Failed to load env file ", err.Error())
 	}

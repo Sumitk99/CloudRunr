@@ -1,0 +1,53 @@
+.deploy-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 12px;
+  h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+  }
+  p { color: rgba(255, 255, 255, 0.85); }
+}
+
+.logs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 60vh;
+  overflow: auto;
+}
+
+.log {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.time {
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.statement {
+  white-space: pre-wrap;
+  color: rgba(255,255,255,0.95);
+  margin: 0;
+}
+
+.center { display: flex; justify-content: center; padding: 12px; }
+
+.actions { display: flex; justify-content: center; margin-top: 12px; }

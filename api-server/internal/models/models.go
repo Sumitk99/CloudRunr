@@ -47,6 +47,12 @@ type NewProjectRes struct {
 	DeploymentId string `json:"deployment_id"`
 }
 
+type UserProjectListContent struct {
+	ProjectID string `json:"project_id"`
+	Name      string `json:"name"`
+	GitUrl    string `json:"git_url"`
+	Framework string `json:"framework"`
+}
 type LogData struct {
 	LogStatement string    `json:"log_statement"`
 	Time         time.Time `json:"time"`

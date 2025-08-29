@@ -1,0 +1,23 @@
+<div class="page-content">
+  <mat-card class="deploy-card">
+    <div class="header">
+      <h2>Deployment Logs</h2>
+      <p>Project: {{projectId}} • Deployment: {{deploymentId}}</p>
+    </div>
+
+    <div class="logs">
+      <div class="log" *ngFor="let log of logs">
+        <div class="time">{{ log.time | date:'short' }}</div>
+        <pre class="statement">{{ log.log_statement }}</pre>
+      </div>
+      <div class="empty" *ngIf="!logs.length && !isLoading">No logs yet. Waiting for output...</div>
+      <div class="center" *ngIf="isLoading">
+        <mat-spinner diameter="28"></mat-spinner>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button mat-stroked-button color="primary" (click)="fetchLogs()" [disabled]="isLoading">Load More</button>
+    </div>
+  </mat-card>
+</div>

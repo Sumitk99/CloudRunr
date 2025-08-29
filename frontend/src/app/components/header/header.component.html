@@ -1,11 +1,21 @@
 <mat-toolbar class="header" #headerContainer>
   <div class="header-container">
-    <div class="logo-section" #logoSection>
+    <div class="logo-section" #logoSection (click)="onLogoClick()" tabindex="0" aria-label="CloudRunr Home">
       <img src="assets/logo.png" alt="CloudRunr Logo" class="logo">
       <span class="brand-name">CloudRunr</span>
     </div>
-    
+
     <div class="auth-section" #authSection>
+      <button 
+        mat-stroked-button 
+        color="primary"
+        class="login-btn" 
+        (click)="onNewProjectClick($event)"
+        (mouseenter)="onButtonHover($event)"
+        (mouseleave)="onButtonLeave($event)">
+        New Project
+      </button>
+
       <button 
         *ngIf="!isLoggedIn" 
         mat-raised-button 
@@ -17,17 +27,31 @@
         <mat-icon>login</mat-icon>
         Login
       </button>
+      
       <button 
         *ngIf="isLoggedIn" 
         mat-raised-button 
         color="accent"
         class="profile-btn" 
+        [matMenuTriggerFor]="profileMenu"
         (click)="onProfileClick($event)"
         (mouseenter)="onButtonHover($event)"
         (mouseleave)="onButtonLeave($event)">
         <mat-icon>account_circle</mat-icon>
-        Profile
+        {{ currentUser?.name || 'Profile' }}
       </button>
+      
+      <mat-menu #profileMenu="matMenu" class="profile-menu">
+        <button mat-menu-item (click)="onProjectsClick()">
+          <mat-icon>folder</mat-icon>
+          <span>Projects</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="onLogoutClick()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
     </div>
   </div>
 </mat-toolbar>

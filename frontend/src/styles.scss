@@ -19,6 +19,21 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
+/* Global offset for header - prevents content from hiding behind fixed header */
+.page-content {
+  padding-top: 80px; /* Adjust based on your header height */
+}
+
+/* Ensure all text is visible on dark theme */
+.mat-mdc-form-field-label,
+.mat-mdc-input-element,
+.mat-mdc-form-field-hint,
+.mat-mdc-form-field-error,
+input::placeholder,
+textarea::placeholder {
+  color: white !important;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -35,4 +50,27 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+/* Custom Snackbar Styles */
+.success-snackbar {
+  background: linear-gradient(135deg, #4caf50, #45a049) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3) !important;
+  
+  .mat-simple-snackbar-action {
+    color: white !important;
+  }
+}
+
+.error-snackbar {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3) !important;
+  
+  .mat-simple-snackbar-action {
+    color: white !important;
+  }
 }
