@@ -34,6 +34,108 @@ textarea::placeholder {
   color: white !important;
 }
 
+/* Material Design Form Field Dark Theme Overrides */
+.mat-mdc-form-field {
+  /* Outline borders - all parts */
+  .mdc-notched-outline .mdc-notched-outline__leading,
+  .mdc-notched-outline .mdc-notched-outline__notch,
+  .mdc-notched-outline .mdc-notched-outline__trailing {
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    border-width: 1px !important;
+  }
+
+  /* Hover state */
+  &:not(.mat-focused):hover .mdc-notched-outline {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: rgba(255, 255, 255, 0.6) !important;
+    }
+  }
+
+  /* Focused state */
+  &.mat-focused .mdc-notched-outline {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #667eea !important;
+      border-width: 2px !important;
+    }
+  }
+
+  /* Labels - Default state */
+  .mat-mdc-form-field-label {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  /* Labels - Focused state */
+  &.mat-focused .mat-mdc-form-field-label {
+    color: #667eea !important;
+  }
+
+  /* Input elements */
+  .mat-mdc-input-element {
+    color: white !important;
+    caret-color: #667eea !important;
+  }
+
+  /* Placeholder */
+  .mat-mdc-input-element::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+    opacity: 1 !important;
+  }
+
+  /* Hints */
+  .mat-mdc-form-field-hint {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+
+  /* Error state */
+  &.mat-form-field-invalid {
+    .mdc-notched-outline .mdc-notched-outline__leading,
+    .mdc-notched-outline .mdc-notched-outline__notch,
+    .mdc-notched-outline .mdc-notched-outline__trailing {
+      border-color: #f44336 !important;
+    }
+
+    .mat-mdc-form-field-label {
+      color: #f44336 !important;
+    }
+  }
+
+  /* Select specific styling */
+  .mat-mdc-select-value {
+    color: white !important;
+  }
+
+  .mat-mdc-select-arrow {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  &.mat-focused .mat-mdc-select-arrow {
+    color: #667eea !important;
+  }
+}
+
+/* Select dropdown panel */
+.mat-mdc-select-panel {
+  background: rgba(30, 30, 50, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.mat-mdc-option {
+  color: white !important;
+  
+  &:hover:not(.mdc-list-item--disabled) {
+    background: rgba(102, 126, 234, 0.2) !important;
+  }
+
+  &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+    background: rgba(102, 126, 234, 0.3) !important;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

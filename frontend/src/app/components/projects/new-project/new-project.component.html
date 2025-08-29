@@ -1,48 +1,190 @@
 <div class="page-content">
-  <mat-card class="new-project-card" #card>
-    <div class="header">
-      <h2>New Project</h2>
-      <p>Connect your repository and configure build settings</p>
+  <div class="new-project-container" #pageContainer>
+    <!-- Back Button -->
+    <button mat-icon-button class="back-button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <!-- Animated Background -->
+    <div class="background-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" #formEl class="form-grid">
-      <mat-form-field appearance="outline">
-        <mat-label>GitHub URL</mat-label>
-        <input matInput formControlName="git_url" placeholder="https://github.com/user/repo">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Framework</mat-label>
-        <mat-select formControlName="framework">
-          <mat-option *ngFor="let fw of frameworks" [value]="fw.value">{{fw.label}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Dist Folder</mat-label>
-        <input matInput formControlName="dist_folder" placeholder="dist or build">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Project ID</mat-label>
-        <input matInput formControlName="project_id" placeholder="unique-project-id">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Project Name</mat-label>
-        <input matInput formControlName="name" placeholder="My Awesome App">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Run Command (optional)</mat-label>
-        <input matInput formControlName="run_command" placeholder="npm run build">
-      </mat-form-field>
-
-      <div class="actions">
-        <button mat-raised-button color="primary" [disabled]="form.invalid || isLoading">
-          {{ isLoading ? 'Creating...' : 'Create Project' }}
-        </button>
+    <!-- Header Section -->
+    <div class="header-section" #headerSection>
+      <div class="header-content">
+        <div class="header-icon">
+          <mat-icon>rocket_launch</mat-icon>
+        </div>
+        <h1>Create New Project</h1>
+        <p>Deploy your frontend application to the cloud in minutes</p>
+        <div class="header-stats">
+          <div class="stat">
+            <span class="number">⚡</span>
+            <span class="label">Lightning Fast</span>
+          </div>
+          <div class="stat">
+            <span class="number">🚀</span>
+            <span class="label">Auto Deploy</span>
+          </div>
+          <div class="stat">
+            <span class="number">🔧</span>
+            <span class="label">Zero Config</span>
+          </div>
+        </div>
       </div>
-    </form>
-  </mat-card>
+    </div>
+
+    <!-- Main Form Card -->
+    <mat-card class="form-card" #formCard>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="project-form">
+        
+        <!-- Step 1: Repository -->
+        <div class="form-section">
+          <div class="section-header">
+            <mat-icon class="section-icon">code</mat-icon>
+            <h3>Repository Details</h3>
+            <p>Connect your GitHub repository</p>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width" #formField>
+              <!-- <mat-label>GitHub Repository URL</mat-label> -->
+              <input 
+                matInput 
+                formControlName="git_url" 
+                placeholder="https://github.com/username/repository"
+                (blur)="onGitUrlChange()">
+              <mat-icon matPrefix>link</mat-icon>
+              <mat-hint>Paste your GitHub repository URL</mat-hint>
+              <mat-error *ngIf="form.get('git_url')?.errors?.['required']">Repository URL is required</mat-error>
+              <mat-error *ngIf="form.get('git_url')?.errors?.['pattern']">Please enter a valid GitHub URL</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" #formField>
+              <!-- <mat-label>Project Name</mat-label> -->
+              <input 
+                matInput 
+                formControlName="name" 
+                placeholder="My Awesome App">
+              <mat-icon matPrefix>title</mat-icon>
+              <mat-hint>Display name for your project</mat-hint>
+              <mat-error *ngIf="form.get('name')?.errors?.['required']">Project name is required</mat-error>
+              <mat-error *ngIf="form.get('name')?.errors?.['minlength']">Name must be at least 2 characters</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" #formField>
+              <!-- <mat-label>Project ID</mat-label> -->
+              <input 
+                matInput 
+                formControlName="project_id" 
+                placeholder="my-awesome-app">
+              <mat-icon matPrefix>fingerprint</mat-icon>
+              <mat-hint>Unique identifier (lowercase, numbers, hyphens)</mat-hint>
+              <mat-error *ngIf="form.get('project_id')?.errors?.['required']">Project ID is required</mat-error>
+              <mat-error *ngIf="form.get('project_id')?.errors?.['pattern']">Only lowercase letters, numbers, and hyphens allowed</mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Step 2: Framework Selection -->
+        <div class="form-section" #frameworkSelection>
+          <div class="section-header">
+            <mat-icon class="section-icon">web</mat-icon>
+            <h3>Choose Framework</h3>
+            <p>Select your frontend framework</p>
+          </div>
+          
+          <div class="framework-grid">
+            <div 
+              class="framework-card" 
+              *ngFor="let framework of frameworks"
+              [class.selected]="form.get('framework')?.value === framework.value"
+              (click)="selectFramework(framework)">
+              <div class="framework-icon">
+                <img [src]="framework.icon" [alt]="framework.label">
+              </div>
+              <div class="framework-info">
+                <h4>{{ framework.label }}</h4>
+                <p>{{ framework.description }}</p>
+              </div>
+              <div class="framework-check" *ngIf="form.get('framework')?.value === framework.value">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Build Configuration -->
+        <div class="form-section" #configSection>
+          <div class="section-header">
+            <mat-icon class="section-icon">settings</mat-icon>
+            <h3>Build Configuration</h3>
+            <p>Configure your build settings</p>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" #formField>
+              <!-- <mat-label>Build Folder</mat-label> -->
+              <input 
+                matInput 
+                formControlName="dist_folder" 
+                placeholder="dist">
+              <mat-icon matPrefix>folder</mat-icon>
+              <mat-hint>Output folder after build (usually 'dist' or 'build')</mat-hint>
+              <mat-error *ngIf="form.get('dist_folder')?.errors?.['required']">Build folder is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" #formField>
+              <!-- <mat-label>Build Command (Optional)</mat-label> -->
+              <input 
+                matInput 
+                formControlName="run_command" 
+                placeholder="npm run build">
+              <mat-icon matPrefix>terminal</mat-icon>
+              <mat-hint>Command to build your project</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <!-- Framework-specific hints -->
+          <div class="config-hint" *ngIf="selectedFramework">
+            <div class="hint-card">
+              <mat-icon>info</mat-icon>
+              <div class="hint-content">
+                <h5>{{ selectedFramework.label }} Configuration</h5>
+                <p><strong>Typical build folder:</strong> {{ selectedFramework.buildFolder }}</p>
+                <p><strong>Typical build command:</strong> {{ selectedFramework.buildCommand }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section" #submitSection>
+          <div class="submit-content">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              type="submit"
+              class="create-button"
+              [disabled]="form.invalid || isLoading">
+              <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+              <mat-icon *ngIf="!isLoading">rocket_launch</mat-icon>
+              {{ isLoading ? 'Creating Project...' : 'Create & Deploy Project' }}
+            </button>
+            
+            <div class="submit-hint">
+              <mat-icon>info_outline</mat-icon>
+              <span>Your project will be automatically deployed after creation</span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-card>
+  </div>
 </div>
