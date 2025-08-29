@@ -4,8 +4,18 @@
       <img src="assets/logo.png" alt="CloudRunr Logo" class="logo">
       <span class="brand-name">CloudRunr</span>
     </div>
-    
+
     <div class="auth-section" #authSection>
+      <button 
+        mat-stroked-button 
+        color="primary"
+        class="login-btn" 
+        (click)="onNewProjectClick($event)"
+        (mouseenter)="onButtonHover($event)"
+        (mouseleave)="onButtonLeave($event)">
+        New Project
+      </button>
+
       <button 
         *ngIf="!isLoggedIn" 
         mat-raised-button 

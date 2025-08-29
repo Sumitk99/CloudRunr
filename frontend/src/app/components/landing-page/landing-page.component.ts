@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { AuthService } from '../../services/auth.service';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,7 +28,10 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
   @ViewChild('ctaSection') ctaSection!: ElementRef;
   @ViewChild('floatingShapes') floatingShapes!: ElementRef;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     // Initialize component logic
@@ -148,22 +152,26 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
   }
 
   onGetStartedClick(event: Event): void {
+    // Add click animation
     const target = event.target as HTMLElement;
     gsap.to(target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
-    // Will implement later
-    console.log('Get Started clicked');
+    
+    // Check if user is logged in and redirect accordingly
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/projects/new']);
+    } else {
+      this.router.navigate(['/auth']);
+    }
   }
 
   onLearnMoreClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    gsap.to(target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
+    gsap.to(event.target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
     // Will implement later
     console.log('Learn More clicked');
   }
 
   onDeployClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    gsap.to(target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
+    gsap.to(event.target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
     // Will implement later
     console.log('Deploy clicked');
   }

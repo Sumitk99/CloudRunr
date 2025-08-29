@@ -76,9 +76,14 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     gsap.to(target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
   }
 
+  onNewProjectClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    gsap.to(target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
+    this.router.navigate(['/projects/new']);
+  }
+
   onProjectsClick(): void {
-    // Will implement projects page later
-    console.log('Projects clicked');
+    this.router.navigate(['/projects']);
   }
 
   onLogoutClick(): void {

@@ -1,0 +1,23 @@
+<div class="page-content">
+  <div class="projects-header">
+    <h2>Your Projects</h2>
+    <button mat-raised-button color="primary" (click)="openProject('new')">New Project</button>
+  </div>
+
+  <div class="projects-grid">
+    <mat-card class="project-card" *ngFor="let p of projects" (click)="openProject(p.project_id)">
+      <div class="left">
+        <img class="framework" [src]="frameworkLogo(p.framework)" alt="framework" />
+        <div class="info">
+          <div class="name">{{ p.name }}</div>
+          <div class="pid">{{ p.project_id }}</div>
+        </div>
+      </div>
+      <div class="right" (click)="$event.stopPropagation()">
+        <img class="github" src="assets/frameswork_logos/github.svg" alt="github" (click)="openRepo(p.git_url)" />
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="empty" *ngIf="!isLoading && !projects.length">No projects yet.</div>
+</div>
