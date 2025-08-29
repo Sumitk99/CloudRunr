@@ -77,10 +77,28 @@ func (repo *Repository) NewProjectRepository(ctx *gin.Context, project *models.N
 	return err
 }
 
-func (repo *Repository) GetUserProjects(ctx *gin.Context) []string {
+func (repo *Repository) GetUserProjects(ctx *gin.Context) ([]models.UserProjectListContent, error) {
 	userId := ctx.GetString("user_id")
 
-	query := `SELECT `
+	query := `SELECT project_id, github_url, name, framework FROM projects WHERE user_id = $1`
+	rows, err := repo.PG.QueryContext(ctx, query, userId)
+	if err != nil {
+		return nil, err
+	}
+	projects := make([]models.UserProjectListContent, 0)
+	for rows.Next() {
+		var projectId, giturl, name, framework string
+		if err != rows.Scan(&projectId, &giturl, &name, &framework) {
+			return nil, err
+		}
+		projects = append(projects, models.UserProjectListContent{
+			ProjectID: projectId,
+			Name:      name,
+			GitUrl:    giturl,
+			Framework: framework,
+		})
+	}
+	return projects, nil
 }
 
 func (repo *Repository) GetProjectDetails(ctx *gin.Context, projectId *string) (*models.ProjectDetails, error) {

@@ -79,3 +79,7 @@ func (srv *Service) LogRetrievalService(ctx *gin.Context, deploymentId string, o
 	}
 	return logs, nil
 }
+
+func (srv *Service) GetUserProjectsService(ctx *gin.Context) ([]models.UserProjectListContent, error) {
+	return srv.Repo.GetUserProjects(ctx)
+}
