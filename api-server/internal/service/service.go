@@ -70,6 +70,10 @@ func (srv *Service) DeploymentService(ctx *gin.Context, projectId *string) (*str
 	return deploymentConfig.DeploymentID, nil
 }
 
+func (srv *Service) GetProjectDetailsService(ctx *gin.Context, projectId *string) (*models.ProjectDetails, error) {
+	return srv.Repo.GetProjectDetails(ctx, projectId)
+}
+
 func (srv *Service) LogRetrievalService(ctx *gin.Context, deploymentId string, offset int) ([]models.LogData, error) {
 	userId := ctx.GetString("user_id")
 

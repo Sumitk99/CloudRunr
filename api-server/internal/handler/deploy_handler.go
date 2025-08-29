@@ -25,7 +25,7 @@ func DeployReqHandler(srv *service.Service) gin.HandlerFunc {
 		}
 		c.JSON(http.StatusAccepted, models.DeployRes{
 			Status:       constants.STATUS_QUEUED,
-			Url:          form.ProjectID,
+			Url:          form.ProjectID + ".localhost:8000",
 			DeploymentID: *res,
 		})
 	}
@@ -58,5 +58,19 @@ func GetUserProjectsHandler(srv *service.Service) gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"projects": res})
+	}
+}
+
+func GetProjectDetails(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		projectId := c.GetString("project_id")
+		res, err := srv.GetProjectDetailsService(c, &projectId)
+		res.SubDomain = res.ProjectID + ".localhost:8000"
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		c.JSON(http.StatusOK, res)
 	}
 }

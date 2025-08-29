@@ -45,6 +45,10 @@ export class ProjectsListComponent implements OnInit {
   }
 
   openProject(id: string): void {
-    this.router.navigate([`/projects/${id}`]);
+    if (id === 'new') {
+      this.router.navigate(['/projects/new']);
+    } else {
+      this.router.navigate(['/projects', id]);
+    }
   }
 }

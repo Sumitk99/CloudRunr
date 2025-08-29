@@ -1,23 +1,102 @@
 <div class="page-content">
-  <mat-card class="deploy-card">
-    <div class="header">
-      <h2>Deployment Logs</h2>
-      <p>Project: {{projectId}} • Deployment: {{deploymentId}}</p>
-    </div>
+  <div class="deployment-container" #deploymentContainer>
+    <!-- Back Button -->
+    <button mat-icon-button class="back-button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
 
-    <div class="logs">
-      <div class="log" *ngFor="let log of logs">
-        <div class="time">{{ log.time | date:'short' }}</div>
-        <pre class="statement">{{ log.log_statement }}</pre>
-      </div>
-      <div class="empty" *ngIf="!logs.length && !isLoading">No logs yet. Waiting for output...</div>
-      <div class="center" *ngIf="isLoading">
-        <mat-spinner diameter="28"></mat-spinner>
-      </div>
-    </div>
+    <!-- Deployment Header -->
+    <mat-card class="deployment-header-card" #deploymentHeader>
+      <mat-card-header>
+        <div class="header-content">
+          <div class="deployment-info">
+            <h1>
+              <mat-icon>rocket_launch</mat-icon>
+              Deployment Details
+            </h1>
+            <div class="deployment-meta">
+              <div class="meta-item">
+                <span class="label">Project:</span>
+                <span class="value">{{ projectId }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">Deployment ID:</span>
+                <code class="deployment-id">{{ deploymentId }}</code>
+              </div>
+            </div>
+          </div>
+          <div class="status-section">
+            <mat-chip [class]="'status-chip status-' + getStatusColor()">
+              <mat-icon>{{ getStatusIcon() }}</mat-icon>
+              {{ deploymentStatus }}
+            </mat-chip>
+          </div>
+        </div>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="url-section" *ngIf="deploymentUrl">
+          <div class="url-header">
+            <mat-icon>link</mat-icon>
+            <span>Deployment URL</span>
+          </div>
+          <div class="url-container">
+            <code class="deployment-url">{{ deploymentUrl }}</code>
+            <button 
+              mat-icon-button 
+              class="url-button" 
+              (click)="openDeploymentUrl()"
+              matTooltip="Open in new tab">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-    <div class="actions">
-      <button mat-stroked-button color="primary" (click)="fetchLogs()" [disabled]="isLoading">Load More</button>
-    </div>
-  </mat-card>
+    <!-- Logs Section -->
+    <mat-card class="logs-card" #logsContainer>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>terminal</mat-icon>
+          Live Logs
+        </mat-card-title>
+        <mat-card-subtitle>
+          Real-time deployment logs (auto-refreshing every 3 seconds)
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="logs-container">
+          <div class="log-entry" *ngFor="let log of logs; trackBy: trackByLogTime">
+            <div class="log-time">{{ log.time | date:'HH:mm:ss' }}</div>
+            <pre class="log-statement">{{ log.log_statement }}</pre>
+          </div>
+          
+          <div class="empty-logs" *ngIf="!logs.length && !isLoading">
+            <mat-icon>schedule</mat-icon>
+            <p>Waiting for logs...</p>
+            <small>Logs will appear here as the deployment progresses</small>
+          </div>
+          
+          <div class="loading-logs" *ngIf="isLoading">
+            <mat-spinner diameter="28"></mat-spinner>
+            <p>Loading logs...</p>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button 
+          mat-stroked-button 
+          color="primary" 
+          (click)="fetchLogs()" 
+          [disabled]="isLoading"
+          class="load-more-btn">
+          <mat-icon>refresh</mat-icon>
+          Load More Logs
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 </div>

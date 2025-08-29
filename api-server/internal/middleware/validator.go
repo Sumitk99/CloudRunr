@@ -144,3 +144,16 @@ func ValidateLogRetrievalReq(srv *service.Service) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func ValidateProjectDetailReq(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		projectId := c.Param("project_id")
+		if projectId == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Project ID"})
+			c.Abort()
+			return
+		}
+		c.Set("project_id", projectId)
+		c.Next()
+	}
+}
