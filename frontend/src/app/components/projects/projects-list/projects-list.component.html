@@ -6,16 +6,18 @@
 
   <div class="projects-grid">
     <mat-card class="project-card" *ngFor="let p of projects" (click)="openProject(p.project_id)">
-      <div class="left">
-        <img class="framework" [src]="frameworkLogo(p.framework)" alt="framework" />
-        <div class="info">
-          <div class="name">{{ p.name }}</div>
-          <div class="pid">{{ p.project_id }}</div>
+      <mat-card-content class="card-content">
+        <div class="left">
+          <img class="framework" [src]="frameworkLogo(p.framework)" alt="framework" />
+          <div class="info">
+            <div class="name">{{ p.name }}</div>
+            <div class="pid">{{ p.project_id }}</div>
+          </div>
         </div>
-      </div>
-      <div class="right" (click)="$event.stopPropagation()">
-        <img class="github" src="assets/frameswork_logos/github.svg" alt="github" (click)="openRepo(p.git_url)" />
-      </div>
+        <div class="right" (click)="$event.stopPropagation()">
+          <img class="github" src="assets/frameswork_logos/github.svg" alt="github" (click)="openRepo(p.git_url)" />
+        </div>
+      </mat-card-content>
     </mat-card>
   </div>
 
