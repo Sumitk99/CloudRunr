@@ -23,7 +23,7 @@ func SetupRoutes(router *gin.Engine, srv *service.Service) {
 		handler.GetUser(srv),
 	)
 	router.POST(
-		"/project",
+		"/project", //new project
 		middleware.Authenticate(),
 		middleware.ValidateNewProjectReq(srv),
 		handler.NewProjectHandler(srv),
@@ -32,6 +32,7 @@ func SetupRoutes(router *gin.Engine, srv *service.Service) {
 		"/projects",
 		middleware.Authenticate(),
 		handler.GetUserProjectsHandler(srv))
+
 	router.POST(
 		"/deploy/:project_id",
 		middleware.Authenticate(),
@@ -43,4 +44,11 @@ func SetupRoutes(router *gin.Engine, srv *service.Service) {
 		middleware.Authenticate(),
 		middleware.ValidateLogRetrievalReq(srv),
 		handler.LogRetrievalHandler(srv))
+
+	router.GET(
+		"/project/detail/:project_id",
+		middleware.Authenticate(),
+		middleware.ValidateProjectDetailReq(srv),
+		handler.GetProjectDetails(srv),
+	)
 }

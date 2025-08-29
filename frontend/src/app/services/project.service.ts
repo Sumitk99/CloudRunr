@@ -37,6 +37,23 @@ export interface LogsResponse {
   data: LogData[];
 }
 
+export interface ProjectDetail {
+  user_id: string;
+  git_url: string;
+  framework: string;
+  dist_folder: string;
+  project_id: string;
+  name: string;
+  run_command: string;
+  subdomain: string;
+}
+
+export interface DeploymentResponse {
+  status: string;
+  deployment_id: string;
+  url: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
   constructor(private http: HttpClient, private auth: AuthService) {}
@@ -67,6 +84,20 @@ export class ProjectService {
     const url = `${environment.backendUrl}/logs/${deployId}/${offset}`;
     const headers = this.buildTokenHeaders();
     const res$ = this.http.get<LogsResponse>(url, { headers });
+    return await firstValueFrom(res$);
+  }
+
+  async getProjectDetail(projectId: string): Promise<ProjectDetail> {
+    const url = `${environment.backendUrl}/project/detail/${projectId}`;
+    const headers = this.buildTokenHeaders();
+    const res$ = this.http.get<ProjectDetail>(url, { headers });
+    return await firstValueFrom(res$);
+  }
+
+  async deployProject(projectId: string): Promise<DeploymentResponse> {
+    const url = `${environment.backendUrl}/deploy/${projectId}`;
+    const headers = this.buildTokenHeaders();
+    const res$ = this.http.post<DeploymentResponse>(url, {}, { headers });
     return await firstValueFrom(res$);
   }
 }

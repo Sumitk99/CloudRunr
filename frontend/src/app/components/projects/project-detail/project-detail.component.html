@@ -1,0 +1,130 @@
+<div class="page-content">
+  <div class="project-detail-container" #detailContainer>
+    <!-- Back Button -->
+    <button mat-icon-button class="back-button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading">
+      <mat-spinner></mat-spinner>
+      <p>Loading project details...</p>
+    </div>
+
+    <!-- Project Detail Card -->
+    <mat-card class="project-detail-card" #projectCard *ngIf="!isLoading && projectDetail">
+      <mat-card-header class="project-header">
+        <div class="header-content">
+          <div class="project-info">
+            <img class="framework-logo" [src]="frameworkLogo(projectDetail.framework)" alt="framework">
+            <div class="project-title">
+              <h1>{{ projectDetail.name }}</h1>
+              <p class="project-id">{{ projectDetail.project_id }}</p>
+            </div>
+          </div>
+          <div class="project-actions">
+            <button mat-icon-button (click)="openSubdomain()" matTooltip="Open Subdomain">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content class="project-content">
+        <div class="project-details-grid">
+          <!-- Git Repository -->
+          <div class="detail-item">
+            <mat-icon class="detail-icon">code</mat-icon>
+            <div class="detail-content">
+              <label>Repository</label>
+              <a [href]="projectDetail.git_url" target="_blank" class="git-url">
+                {{ projectDetail.git_url }}
+              </a>
+            </div>
+          </div>
+
+          <!-- Framework -->
+          <div class="detail-item">
+            <mat-icon class="detail-icon">web</mat-icon>
+            <div class="detail-content">
+              <label>Framework</label>
+              <mat-chip-set>
+                <mat-chip>{{ projectDetail.framework }}</mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+
+          <!-- Distribution Folder -->
+          <div class="detail-item">
+            <mat-icon class="detail-icon">folder</mat-icon>
+            <div class="detail-content">
+              <label>Build Folder</label>
+              <span class="value">{{ projectDetail.dist_folder }}</span>
+            </div>
+          </div>
+
+          <!-- Run Command -->
+          <div class="detail-item" *ngIf="projectDetail.run_command">
+            <mat-icon class="detail-icon">terminal</mat-icon>
+            <div class="detail-content">
+              <label>Run Command</label>
+              <code class="command">{{ projectDetail.run_command }}</code>
+            </div>
+          </div>
+
+          <!-- Subdomain -->
+          <div class="detail-item">
+            <mat-icon class="detail-icon">link</mat-icon>
+            <div class="detail-content">
+              <label>Subdomain</label>
+              <a [href]="'http://' + projectDetail.subdomain" target="_blank" class="subdomain-url">
+                {{ projectDetail.subdomain }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Deployment Section -->
+    <div class="deployment-section" #deploymentSection *ngIf="!isLoading && projectDetail">
+      <mat-card class="deployment-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>rocket_launch</mat-icon>
+            Deployment
+          </mat-card-title>
+          <mat-card-subtitle>
+            Deploy your project to the cloud
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Ready to deploy your project? Click the button below to start a new deployment.</p>
+        </mat-card-content>
+        <mat-card-actions #actionButtons>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            class="deploy-button"
+            [disabled]="isDeploying"
+            (click)="deployProject()">
+            <mat-spinner diameter="20" *ngIf="isDeploying"></mat-spinner>
+            <mat-icon *ngIf="!isDeploying">play_arrow</mat-icon>
+            {{ isDeploying ? 'Deploying...' : 'New Deployment' }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-container" *ngIf="!isLoading && !projectDetail">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <h2>Project Not Found</h2>
+      <p>The requested project could not be found.</p>
+      <button mat-raised-button color="primary" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Projects
+      </button>
+    </div>
+  </div>
+</div>

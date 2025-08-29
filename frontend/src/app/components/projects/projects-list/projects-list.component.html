@@ -1,11 +1,21 @@
 <div class="page-content">
-  <div class="projects-header">
+  <div class="projects-header" #projectsHeader>
     <h2>Your Projects</h2>
     <button mat-raised-button color="primary" (click)="openProject('new')">New Project</button>
   </div>
 
-  <div class="projects-grid">
-    <mat-card class="project-card" *ngFor="let p of projects" (click)="openProject(p.project_id)">
+  <div class="projects-grid" #projectsGrid>
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="loading-cards">
+        <div class="loading-card" *ngFor="let item of [1,2,3,4]">
+          <div class="loading-shimmer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Cards -->
+    <mat-card class="project-card" #projectCard *ngFor="let p of projects; trackBy: trackByProjectId" (click)="openProject(p.project_id)">
       <mat-card-content class="card-content">
         <div class="left">
           <img class="framework" [src]="frameworkLogo(p.framework)" alt="framework" />
@@ -21,5 +31,15 @@
     </mat-card>
   </div>
 
-  <div class="empty" *ngIf="!isLoading && !projects.length">No projects yet.</div>
+  <div class="empty" #emptyState *ngIf="!isLoading && !projects.length">
+    <div class="empty-content">
+      <div class="empty-icon">📁</div>
+      <h3>No projects yet</h3>
+      <p>Create your first project to get started</p>
+      <button mat-raised-button color="primary" (click)="openProject('new')">
+        <mat-icon>add</mat-icon>
+        Create Project
+      </button>
+    </div>
+  </div>
 </div>
