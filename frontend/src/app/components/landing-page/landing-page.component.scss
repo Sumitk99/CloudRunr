@@ -73,6 +73,10 @@
 
   mat-icon {
     margin-right: 8px;
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
   }
 }
 
@@ -220,8 +224,13 @@
     justify-content: center;
     
     mat-icon {
-      font-size: 36px;
+      font-size: 36px !important;
       color: white;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
   
@@ -283,6 +292,10 @@
 
   mat-icon {
     margin-right: 8px;
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
   }
 }
 
