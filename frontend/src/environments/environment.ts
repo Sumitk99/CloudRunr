@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  backendUrl: 'http://localhost:8080',
+  backendUrl: 'https://cloudexec.micro-scale.software/api',
   apiEndpoints: {
     login: '/login',
     signup: '/signup'
