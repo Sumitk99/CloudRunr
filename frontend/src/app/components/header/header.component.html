@@ -27,6 +27,19 @@
         <mat-icon>login</mat-icon>
         Login
       </button>
+
+      <!-- My Projects Button - only shown when logged in -->
+      <button 
+        *ngIf="isLoggedIn"
+        mat-stroked-button 
+        color="primary"
+        class="my-projects-btn" 
+        (click)="onMyProjectsClick($event)"
+        (mouseenter)="onButtonHover($event)"
+        (mouseleave)="onButtonLeave($event)">
+        <mat-icon>dashboard</mat-icon>
+        My Projects
+      </button>
       
       <button 
         *ngIf="isLoggedIn" 
@@ -42,12 +55,17 @@
       </button>
       
       <mat-menu #profileMenu="matMenu" class="profile-menu">
-        <button mat-menu-item (click)="onProjectsClick()">
-          <mat-icon>folder</mat-icon>
-          <span>Projects</span>
-        </button>
+        <div class="profile-menu-header">
+          <div class="user-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="user-info">
+            <h4>{{ currentUser?.name || 'User' }}</h4>
+            <p>{{ currentUser?.email || 'user@cloudrunr.com' }}</p>
+          </div>
+        </div>
         <mat-divider></mat-divider>
-        <button mat-menu-item (click)="onLogoutClick()">
+        <button mat-menu-item (click)="onLogoutClick()" class="logout-item">
           <mat-icon>logout</mat-icon>
           <span>Logout</span>
         </button>

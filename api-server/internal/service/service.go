@@ -87,3 +87,7 @@ func (srv *Service) LogRetrievalService(ctx *gin.Context, deploymentId string, o
 func (srv *Service) GetUserProjectsService(ctx *gin.Context) ([]models.UserProjectListContent, error) {
 	return srv.Repo.GetUserProjects(ctx)
 }
+
+func (srv *Service) GetProjectDeploymentListService(ctx *gin.Context, projectId *string) (*models.DeploymentListResponse, error) {
+	return srv.Repo.GetProjectDeploymentList(ctx, projectId)
+}

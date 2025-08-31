@@ -43,7 +43,7 @@ func (srv *Service) GenerateAllTokens(user *models.User) (singedToken string, si
 		UserID:   user.UserID,
 		GithubID: user.GithubID,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(24)).Unix(),
+			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(24*30)).Unix(),
 		},
 	}
 

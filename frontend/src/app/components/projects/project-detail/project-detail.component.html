@@ -114,6 +114,60 @@
           </button>
         </mat-card-actions>
       </mat-card>
+
+      <!-- Deployment History Section -->
+      <mat-card class="history-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>history</mat-icon>
+            Deployment History
+          </mat-card-title>
+          <mat-card-subtitle>
+            Previous deployments for this project
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <!-- Loading State -->
+          <div class="loading-container" *ngIf="isLoadingHistory">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Loading deployment history...</p>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="!isLoadingHistory && deploymentHistory.length === 0">
+            <mat-icon class="empty-icon">deployed_code_off</mat-icon>
+            <h3>No deployments yet</h3>
+            <p>Create your first deployment using the button above</p>
+          </div>
+
+          <!-- Deployment List -->
+          <div class="deployments-list" *ngIf="!isLoadingHistory && deploymentHistory.length > 0">
+            <div 
+              class="deployment-item" 
+              *ngFor="let deployment of deploymentHistory; trackBy: trackByDeploymentId"
+              (click)="onDeploymentClick(deployment)">
+              <div class="deployment-info">
+                <div class="deployment-header">
+                  <span class="deployment-id">{{ deployment.deployment_id }}</span>
+                  <mat-chip 
+                    class="status-chip"
+                    [style.background-color]="getStatusColor(deployment.status)"
+                    [style.color]="'white'">
+                    {{ deployment.status }}
+                  </mat-chip>
+                </div>
+                <div class="deployment-meta">
+                  <mat-icon class="meta-icon">schedule</mat-icon>
+                  <span class="deployment-date">{{ formatDate(deployment.created_at) }}</span>
+                </div>
+              </div>
+              <div class="deployment-actions">
+                <mat-icon class="action-icon">arrow_forward_ios</mat-icon>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
 
     <!-- Error State -->

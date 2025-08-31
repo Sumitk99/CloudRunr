@@ -61,3 +61,14 @@ type LogData struct {
 type LogRetrievalResponse struct {
 	Data []LogData `json:"data"`
 }
+
+type DeploymentDetails struct {
+	DeploymentID string `json:"deployment_id"`
+	ProjectID    string `json:"project_id"`
+	Status       string `json:"status"`
+	CreatedAt    string `json:"created_at"`
+}
+
+type DeploymentListResponse struct {
+	Deployments []DeploymentDetails `json:"deployments"`
+}

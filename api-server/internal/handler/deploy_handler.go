@@ -74,3 +74,16 @@ func GetProjectDetails(srv *service.Service) gin.HandlerFunc {
 		c.JSON(http.StatusOK, res)
 	}
 }
+
+func GetDeploymentListHandler(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		projectId := c.GetString("project_id")
+		res, err := srv.GetProjectDeploymentListService(c, &projectId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		c.JSON(http.StatusOK, res)
+	}
+}

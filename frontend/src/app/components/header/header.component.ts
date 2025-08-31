@@ -86,6 +86,22 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/projects']);
   }
 
+  onMyProjectsClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    gsap.to(target, { scale: 0.95, duration: 0.1, yoyo: true, repeat: 1 });
+    this.router.navigate(['/projects']);
+  }
+
+  onSettingsClick(): void {
+    // TODO: Implement settings page navigation
+    console.log('Settings clicked - to be implemented');
+  }
+
+  onBillingClick(): void {
+    // TODO: Implement billing page navigation
+    console.log('Billing clicked - to be implemented');
+  }
+
   onLogoutClick(): void {
     this.authService.logout();
   }

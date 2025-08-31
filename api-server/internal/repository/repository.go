@@ -134,3 +134,38 @@ func (repo *Repository) CreateNewDeployment(ctx *gin.Context, projectId, deploym
 	)
 	return err
 }
+
+func (repo *Repository) GetProjectDeploymentList(ctx *gin.Context, projectId *string) (*models.DeploymentListResponse, error) {
+	userId := ctx.GetString("user_id")
+	query := `
+		SELECT DISTINCT d.deployment_id, d.project_id, d.created_at, d.status
+		FROM deployments d
+				 INNER JOIN projects p ON d.project_id = p.project_id
+		WHERE p.project_id = $1
+		  AND p.user_id = $2;
+	`
+
+	rows, err := repo.PG.QueryContext(ctx, query, projectId, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	deploymentList := &models.DeploymentListResponse{
+		Deployments: make([]models.DeploymentDetails, 0),
+	}
+
+	for rows.Next() {
+		var deploymentDetail models.DeploymentDetails
+		err = rows.Scan(
+			&deploymentDetail.DeploymentID,
+			&deploymentDetail.ProjectID,
+			&deploymentDetail.CreatedAt,
+			&deploymentDetail.Status,
+		)
+		if err != nil {
+			return nil, err
+		}
+		deploymentList.Deployments = append(deploymentList.Deployments, deploymentDetail)
+	}
+	return deploymentList, nil
+}

@@ -43,8 +43,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
     private router: Router
   ) {
     this.loginFormGroup = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      email: ['public@public.com', [Validators.required, Validators.email]],
+      password: ['public', [Validators.required, Validators.minLength(6)]]
     });
   }
 

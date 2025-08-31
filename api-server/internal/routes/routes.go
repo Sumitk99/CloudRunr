@@ -51,4 +51,11 @@ func SetupRoutes(router *gin.Engine, srv *service.Service) {
 		middleware.ValidateProjectDetailReq(srv),
 		handler.GetProjectDetails(srv),
 	)
+
+	router.GET(
+		"/deployments/:project_id",
+		middleware.Authenticate(),
+		middleware.ValidateProjectDetailReq(srv),
+		handler.GetDeploymentListHandler(srv),
+	)
 }

@@ -54,6 +54,17 @@ export interface DeploymentResponse {
   url: string;
 }
 
+export interface DeploymentHistoryItem {
+  deployment_id: string;
+  project_id: string;
+  status: string;
+  created_at: string;
+}
+
+export interface DeploymentHistoryResponse {
+  deployments: DeploymentHistoryItem[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
   constructor(private http: HttpClient, private auth: AuthService) {}
@@ -98,6 +109,13 @@ export class ProjectService {
     const url = `${environment.backendUrl}/deploy/${projectId}`;
     const headers = this.buildTokenHeaders();
     const res$ = this.http.post<DeploymentResponse>(url, {}, { headers });
+    return await firstValueFrom(res$);
+  }
+
+  async getDeploymentHistory(projectId: string): Promise<DeploymentHistoryResponse> {
+    const url = `${environment.backendUrl}/deployments/${projectId}`;
+    const headers = this.buildTokenHeaders();
+    const res$ = this.http.get<DeploymentHistoryResponse>(url, { headers });
     return await firstValueFrom(res$);
   }
 }

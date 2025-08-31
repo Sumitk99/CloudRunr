@@ -9,7 +9,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { gsap } from 'gsap';
-import { ProjectService, ProjectItem } from '../../../services/project.service';
+import { ProjectService, ProjectItem, DeploymentHistoryItem, DeploymentHistoryResponse } from '../../../services/project.service';
 
 export interface ProjectDetail {
   user_id: string;
@@ -52,8 +52,10 @@ export class ProjectDetailComponent implements OnInit, AfterViewInit {
 
   projectId!: string;
   projectDetail: ProjectDetail | null = null;
+  deploymentHistory: DeploymentHistoryItem[] = [];
   isLoading = false;
   isDeploying = false;
+  isLoadingHistory = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -66,6 +68,7 @@ export class ProjectDetailComponent implements OnInit, AfterViewInit {
     this.projectId = this.route.snapshot.paramMap.get('projectId') || '';
     if (this.projectId) {
       this.loadProjectDetail();
+      this.loadDeploymentHistory();
     }
   }
 
@@ -106,6 +109,19 @@ export class ProjectDetailComponent implements OnInit, AfterViewInit {
       this.snackBar.open('Failed to load project details', 'Close', { duration: 3000 });
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  async loadDeploymentHistory(): Promise<void> {
+    this.isLoadingHistory = true;
+    try {
+      const response = await this.projectService.getDeploymentHistory(this.projectId);
+      this.deploymentHistory = response.deployments;
+    } catch (error) {
+      console.error('Error loading deployment history:', error);
+      this.snackBar.open('Failed to load deployment history', 'Close', { duration: 3000 });
+    } finally {
+      this.isLoadingHistory = false;
     }
   }
 
@@ -160,6 +176,36 @@ export class ProjectDetailComponent implements OnInit, AfterViewInit {
     if (this.projectDetail?.subdomain) {
       window.open(`http://${this.projectDetail.subdomain}`, '_blank');
     }
+  }
+
+  onDeploymentClick(deployment: DeploymentHistoryItem): void {
+    this.router.navigate(['/projects', this.projectId, deployment.deployment_id]);
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  }
+
+  getStatusColor(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'success':
+      case 'deployed':
+        return '#4caf50';
+      case 'building':
+      case 'in_progress':
+        return '#ff9800';
+      case 'failed':
+      case 'error':
+        return '#f44336';
+      case 'queued':
+      default:
+        return '#2196f3';
+    }
+  }
+
+  trackByDeploymentId(index: number, deployment: DeploymentHistoryItem): string {
+    return deployment.deployment_id;
   }
 
   goBack(): void {

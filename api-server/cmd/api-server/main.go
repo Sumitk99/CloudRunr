@@ -25,7 +25,7 @@ func main() {
 	err := godotenv.Load()
 
 	corsPolicy := cors.Config{
-		AllowOrigins:     []string{"http://localhost:4200"},
+		AllowOrigins:     []string{"http://localhost:4200", "https://cloudrunr.micro-scale.software"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "token"},
 		ExposeHeaders:    []string{"Content-Length"},
