@@ -87,7 +87,12 @@ func (srv *Server) UploadToS3(baseDir, projectID string, Files []string) error {
 			}
 			defer newFile.Close()
 
-			fileType := helper.GetFileType(newFile)
+			fileType := helper.GetFileType(file)
+			if fileType == nil {
+				// fallback to "application/octet-stream"
+				defaultType := "application/octet-stream"
+				fileType = &defaultType
+			}
 
 			_, err = newFile.Seek(0, io.SeekStart)
 			if err != nil {

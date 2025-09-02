@@ -49,7 +49,7 @@ export class DeploymentPageComponent implements OnInit, OnDestroy, AfterViewInit
       this.deploymentStatus = navigation.extras.state['status'] || 'QUEUED';
     } else {
       // Fallback: construct URL from projectId
-      this.deploymentUrl = `${this.projectId}.localhost:8000`;
+      this.deploymentUrl = `${this.projectId}.cloudrunr.micro-scale.software`;
     }
 
     this.fetchLogs();

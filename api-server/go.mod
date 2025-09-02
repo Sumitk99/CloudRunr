@@ -1,6 +1,6 @@
 module github.com/Sumitk99/CloudRunr/api-server
 
-go 1.23.6
+go 1.23.3
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.37.2

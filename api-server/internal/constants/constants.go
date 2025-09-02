@@ -17,6 +17,8 @@ const (
 	USER_NOT_FOUND = "No user found with this email"
 	REACT          = "REACT"
 	ANGULAR        = "ANGULAR"
+
+	ROOT_DOMAIN = ".cloudrunr.micro-scale.software"
 )
 
 var VALID_FRAMEWORKS = []string{

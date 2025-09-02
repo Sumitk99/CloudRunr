@@ -2,8 +2,9 @@ services:
   build-server:
     build: .
     environment:
-      GIT_REPOSITORY_URL : https://github.com/fieldmarcel/reactcounter.git
-      PROJECT_ID : counter
+      GIT_REPOSITORY_URL : https://github.com/fieldmarcel/react-fightclub.git
+      PROJECT_ID : fight
       FRAMEWORK : REACT
-      DEFAULT_DIST_FOLDER : build
+      DEFAULT_DIST_FOLDER : dist
+      DEPLOYMENT_ID : mindeeple
     image: sumitk999/build-server
