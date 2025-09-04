@@ -4,6 +4,7 @@ const (
 	CONTAINER_IMAGE     = "cloudrunr-image"
 	STATUS_FAILED       = "FAILED"
 	STATUS_QUEUED       = "QUEUED"
+	STATUS_IN_PROGRESS  = "IN_PROGRESS"
 	GITHUB_URL_PREFIX_1 = "https://github.com/"
 	GITHUB_URL_PREFIX_2 = "github.com/"
 
@@ -19,6 +20,8 @@ const (
 	ANGULAR        = "ANGULAR"
 
 	ROOT_DOMAIN = ".cloudrunr.micro-scale.software"
+
+	BUILD_STATUS_KAFKA_TOPIC = "build_status"
 )
 
 var VALID_FRAMEWORKS = []string{

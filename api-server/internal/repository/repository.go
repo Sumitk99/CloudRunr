@@ -70,8 +70,8 @@ func (repo *Repository) GetUserByMail(email *string) (*models.User, error) {
 
 func (repo *Repository) NewProjectRepository(ctx *gin.Context, project *models.NewProjectReq) error {
 	_, err := repo.PG.ExecContext(ctx,
-		`INSERT INTO projects (project_id, user_id, github_url,name, framework, dist_folder) VALUES ($1, $2, $3, $4, $5, $6)`,
-		project.ProjectID, ctx.GetString("user_id"), project.GitUrl, project.Name, project.Framework, project.DistFolder,
+		`INSERT INTO projects (project_id, user_id, github_url,name, framework, dist_folder, root_folder) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		project.ProjectID, ctx.GetString("user_id"), project.GitUrl, project.Name, project.Framework, project.DistFolder, project.RootFolder,
 	)
 	log.Println(err)
 	return err
@@ -106,14 +106,14 @@ func (repo *Repository) GetProjectDetails(ctx *gin.Context, projectId *string) (
 	res := &models.ProjectDetails{}
 	row := repo.PG.QueryRowContext(
 		ctx,
-		`SELECT project_id, user_id, github_url, name, subdomain, custom_subdomain,framework, dist_folder FROM projects WHERE user_id = $1 AND project_id = $2`,
+		`SELECT project_id, user_id, github_url, name, subdomain, custom_subdomain,framework, dist_folder, root_folder FROM projects WHERE user_id = $1 AND project_id = $2`,
 		user_id, *projectId,
 	)
 	if row == nil {
 		return nil, errors.New(constants.NO_PROJECT_FOUND)
 	}
 
-	err := row.Scan(&res.ProjectID, &res.UserID, &res.GitUrl, &res.Name, &res.SubDomain, &res.CustomSubDomain, &res.Framework, &res.DistFolder)
+	err := row.Scan(&res.ProjectID, &res.UserID, &res.GitUrl, &res.Name, &res.SubDomain, &res.CustomSubDomain, &res.Framework, &res.DistFolder, &res.RootFolder)
 	if err != nil {
 		log.Println(err.Error())
 		return nil, err
@@ -123,49 +123,4 @@ func (repo *Repository) GetProjectDetails(ctx *gin.Context, projectId *string) (
 	}
 
 	return res, nil
-}
-
-func (repo *Repository) CreateNewDeployment(ctx *gin.Context, projectId, deploymentId, status string) error {
-
-	_, err := repo.PG.ExecContext(
-		ctx,
-		`INSERT INTO deployments (deployment_id, project_id, status) VALUES ($1, $2, $3)`,
-		deploymentId, projectId, status,
-	)
-	return err
-}
-
-func (repo *Repository) GetProjectDeploymentList(ctx *gin.Context, projectId *string) (*models.DeploymentListResponse, error) {
-	userId := ctx.GetString("user_id")
-	query := `
-		SELECT DISTINCT d.deployment_id, d.project_id, d.created_at, d.status
-		FROM deployments d
-				 INNER JOIN projects p ON d.project_id = p.project_id
-		WHERE p.project_id = $1
-		  AND p.user_id = $2;
-	`
-
-	rows, err := repo.PG.QueryContext(ctx, query, projectId, userId)
-	if err != nil {
-		return nil, err
-	}
-
-	deploymentList := &models.DeploymentListResponse{
-		Deployments: make([]models.DeploymentDetails, 0),
-	}
-
-	for rows.Next() {
-		var deploymentDetail models.DeploymentDetails
-		err = rows.Scan(
-			&deploymentDetail.DeploymentID,
-			&deploymentDetail.ProjectID,
-			&deploymentDetail.CreatedAt,
-			&deploymentDetail.Status,
-		)
-		if err != nil {
-			return nil, err
-		}
-		deploymentList.Deployments = append(deploymentList.Deployments, deploymentDetail)
-	}
-	return deploymentList, nil
 }

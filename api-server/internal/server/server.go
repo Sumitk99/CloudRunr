@@ -72,6 +72,10 @@ func (cfg *ECSClusterConfig) SpinUpContainer(ctx *gin.Context, deploymentConfig 
 			Name:  aws.String("RUN_COMMAND"),
 			Value: deploymentConfig.RunCommand,
 		},
+		{
+			Name:  aws.String("ROOT_FOLDER"),
+			Value: deploymentConfig.RootFolder,
+		},
 	}
 	containerOverride := types.ContainerOverride{
 		Name:        aws.String(constants.CONTAINER_IMAGE),
@@ -96,8 +100,5 @@ func (cfg *ECSClusterConfig) SpinUpContainer(ctx *gin.Context, deploymentConfig 
 	}
 	_, err := cfg.ECSClient.RunTask(ctx, runTaskInput)
 
-	if err != nil {
-		log.Println(err.Error())
-	}
 	return err
 }

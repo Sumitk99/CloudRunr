@@ -8,5 +8,9 @@ const (
 	ANGULAR               = "ANGULAR"
 	DEFAULT_DIST_FOLDER   = "dist"
 
-	LOG_KAFKA_TOPIC = "log_data"
+	STATUS_DEPLOYED = "SUCCESS"
+	STATUS_FAILED   = "FAILED"
+
+	LOG_KAFKA_TOPIC          = "log_data"
+	BUILD_STATUS_KAFKA_TOPIC = "build_status"
 )

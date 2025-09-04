@@ -27,10 +27,6 @@ func (srv *Service) NewProjectService(ctx *gin.Context, project *models.NewProje
 		_ = srv.Repo.NewProjectRepository(ctx, project)
 		_ = srv.Repo.CreateNewDeployment(ctx, *project.ProjectID, newDeployId, constants.STATUS_QUEUED)
 	}()
-	//err := srv.Repo.NewProjectRepository(ctx, project)
-	//if err != nil {
-	//	return nil, err
-	//}
 	deploymentConfig := &models.NewDeployment{
 		DeploymentID: &newDeployId,
 		GitUrl:       project.GitUrl,
@@ -38,11 +34,15 @@ func (srv *Service) NewProjectService(ctx *gin.Context, project *models.NewProje
 		DistFolder:   project.DistFolder,
 		ProjectID:    project.ProjectID,
 		RunCommand:   project.RunCommand,
+		RootFolder:   &project.RootFolder,
 	}
 
 	err := srv.ECSClient.SpinUpContainer(ctx, deploymentConfig)
 	if err != nil {
+		_ = srv.Repo.CreateNewDeployment(ctx, *project.ProjectID, newDeployId, constants.STATUS_QUEUED)
 		return nil, err
+	} else {
+		_ = srv.Repo.CreateNewDeployment(ctx, *project.ProjectID, newDeployId, constants.STATUS_IN_PROGRESS)
 	}
 	return deploymentConfig.DeploymentID, nil
 }
@@ -63,11 +63,17 @@ func (srv *Service) DeploymentService(ctx *gin.Context, projectId *string) (*str
 	}
 	err = srv.ECSClient.SpinUpContainer(ctx, deploymentConfig)
 	if err != nil {
+		_ = srv.Repo.CreateNewDeployment(ctx, *projectId, newDeployId, constants.STATUS_QUEUED)
 		return nil, err
+	} else {
+		_ = srv.Repo.CreateNewDeployment(ctx, *projectId, newDeployId, constants.STATUS_IN_PROGRESS)
 	}
 	// SET DEPLOYMENT STATUS TO QUEUED IF SPIN UP FAILS AND PUSH THE PROJECT ID TO SQS
-	_ = srv.Repo.CreateNewDeployment(ctx, *projectId, newDeployId, constants.STATUS_QUEUED)
 	return deploymentConfig.DeploymentID, nil
+}
+
+func (srv *Service) DeploymentStatusService(ctx *gin.Context, deploymentId string) (*string, error) {
+	return srv.Repo.GetDeploymentStatus(ctx, deploymentId)
 }
 
 func (srv *Service) GetProjectDetailsService(ctx *gin.Context, projectId *string) (*models.ProjectDetails, error) {

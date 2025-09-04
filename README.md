@@ -53,7 +53,7 @@ CloudRunr is a cloud-native platform that automates the deployment of frontend a
 ## 🛠️ Technology Stack
 
 ### Backend Services
-- **Language**: Go 1.23+
+- **Language**: Go
 - **Web Framework**: Gin
 - **Authentication**: JWT with bcrypt password hashing
 - **Databases**: PostgreSQL + TimescaleDB
@@ -61,17 +61,9 @@ CloudRunr is a cloud-native platform that automates the deployment of frontend a
 - **Cloud**: AWS (ECS, S3, CloudFront)
 - **Containerization**: Docker
 
-### Frontend
-- **Framework**: Angular 18+
-- **Language**: TypeScript
-- **Styling**: SCSS
-- **Build Tool**: Angular CLI
-
 ### Infrastructure
-- **Container Orchestration**: AWS ECS Fargate
+- **Container Orchestration**: AWS ECS with Fargate
 - **Static Hosting**: AWS S3 + CloudFront
-- **Load Balancing**: Application Load Balancer
-- **Monitoring**: CloudWatch Logs
 
 ## Prerequisites
 

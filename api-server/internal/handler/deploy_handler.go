@@ -87,3 +87,21 @@ func GetDeploymentListHandler(srv *service.Service) gin.HandlerFunc {
 		c.JSON(http.StatusOK, res)
 	}
 }
+
+func DeploymentStatusHandler(srv *service.Service) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		deploymentId := c.Param("deploy_id")
+		if deploymentId == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid deplooyment id"})
+			c.Abort()
+			return
+		}
+		res, err := srv.DeploymentStatusService(c, deploymentId)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"status": *res})
+	}
+}

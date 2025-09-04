@@ -21,6 +21,7 @@ type BuildConfig struct {
 	Framework    string
 	BuildFolder  string
 	RunCommand   string
+	RootFolder   string
 }
 
 func Script(srv *server.Server, cfg BuildConfig) {
@@ -50,8 +51,8 @@ func Script(srv *server.Server, cfg BuildConfig) {
 	fmt.Printf("Output directory: %s\n", OutputDirPath)
 
 	buildCommand := helper.DetectBuildCommand(cfg.Framework)
-	fullCommand := fmt.Sprintf("npm install && %s", buildCommand)
-	log.Println("Build Command : ", buildCommand)
+	fullCommand := fmt.Sprintf("cd %s/%s && npm install && %s", OutputDirPath, cfg.RootFolder, buildCommand)
+	log.Println("Build Command : ", fullCommand)
 
 	srv.LogProducer(constants.LOG_KAFKA_TOPIC, server.Log{
 		DeploymentID: cfg.DeploymentID,
@@ -153,10 +154,13 @@ func Script(srv *server.Server, cfg BuildConfig) {
 		cfg.BuildFolder = constants.DEFAULT_DIST_FOLDER
 	}
 
-	DistFolderPath := path.Join(OutputDirPath, cfg.BuildFolder)
+	DistFolderPath := path.Join(OutputDirPath, cfg.RootFolder, cfg.BuildFolder)
 
 	files, err := helper.GetFilePaths(DistFolderPath)
 	err = srv.UploadToS3(DistFolderPath, cfg.ProjectID, files)
+
+	srv.PushDeploymentStatusToKafka(cfg.DeploymentID, constants.STATUS_DEPLOYED)
+
 	if err != nil {
 		log.Println("Error uploading files to S3:", err)
 		return

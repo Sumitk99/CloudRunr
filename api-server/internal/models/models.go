@@ -20,9 +20,11 @@ type NewDeployment struct {
 	DistFolder   *string `json:"dist_folder"`
 	ProjectID    *string `json:"project_id"`
 	RunCommand   *string `json:"run_command"`
+	RootFolder   *string `json:"root_folder"`
 }
 
 type NewProjectReq struct {
+	RootFolder string  `json:"root"`
 	GitUrl     *string `json:"git_url"`
 	Framework  *string `json:"framework"`
 	DistFolder *string `json:"dist_folder"`
@@ -38,6 +40,7 @@ type ProjectDetails struct {
 	DistFolder      string `json:"dist_folder"`
 	ProjectID       string `json:"project_id"`
 	Name            string `json:"name"`
+	RootFolder      string `json:"root"`
 	RunCommand      string `json:"run_command"`
 	SubDomain       any    `json:"subdomain,omitempty"`
 	CustomSubDomain any    `json:"custom_subdomain,omitempty"`
@@ -53,6 +56,7 @@ type UserProjectListContent struct {
 	GitUrl    string `json:"git_url"`
 	Framework string `json:"framework"`
 }
+
 type LogData struct {
 	LogStatement string    `json:"log_statement"`
 	Time         time.Time `json:"time"`

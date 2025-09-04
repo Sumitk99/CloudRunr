@@ -179,16 +179,13 @@ func (srv *Server) LogProducer(topic string, log Log) error {
 		}
 	}()
 
-	// Marshal log struct to JSON
 	logJSON, err := json.Marshal(log)
 	if err != nil {
 		return fmt.Errorf("failed to marshal log: %v", err)
 	}
 
-	// Create a composite key using deployment_id and project_id for better partitioning
 	key := fmt.Sprintf("%s:%s", log.DeploymentID, log.ProjectID)
 
-	// Produce the log message
 	err = srv.KafkaProducer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
 		Key:            []byte(key),
@@ -199,94 +196,46 @@ func (srv *Server) LogProducer(topic string, log Log) error {
 		return fmt.Errorf("failed to produce message: %v", err)
 	}
 
-	// send any outstanding or buffered messages to the Kafka broker
 	srv.KafkaProducer.Flush(15 * 1000)
 	return nil
 }
 
-// Batch produce function for multiple logs
-func produceLogsBatch(topic string, config kafka.ConfigMap, logs []Log) error {
-	p, err := kafka.NewProducer(&config)
-	if err != nil {
-		return fmt.Errorf("failed to create producer: %v", err)
+func (srv *Server) PushDeploymentStatusToKafka(deploymentId, status string) {
+	if deploymentId == "" || status == "" {
+		log.Println("deploymentId or status is nil, skipping push")
+		return
 	}
-	defer p.Close()
 
-	// Delivery report handler
+	topic := constants.BUILD_STATUS_KAFKA_TOPIC
+
+	msg := &kafka.Message{
+		TopicPartition: kafka.TopicPartition{
+			Topic:     &topic,
+			Partition: kafka.PartitionAny,
+		},
+		Key:   []byte(deploymentId),
+		Value: []byte(status),
+	}
+
+	// Create delivery channel for confirmation
+	deliveryChan := make(chan kafka.Event, 1)
+	defer close(deliveryChan)
+
+	err := srv.KafkaProducer.Produce(msg, deliveryChan)
+	if err != nil {
+		log.Printf("Failed to produce message for deployment %s: %v", deploymentId, err)
+		return
+	}
+
 	go func() {
-		for e := range p.Events() {
-			switch ev := e.(type) {
-			case *kafka.Message:
-				if ev.TopicPartition.Error != nil {
-					fmt.Printf("Failed to deliver message: %v\n", ev.TopicPartition)
-				} else {
-					fmt.Printf("Produced log to topic %s: key = %s\n",
-						*ev.TopicPartition.Topic, string(ev.Key))
-				}
+		e := <-deliveryChan
+		if m, ok := e.(*kafka.Message); ok {
+			if m.TopicPartition.Error != nil {
+				log.Printf("Delivery failed for deployment %s: %v", deploymentId, m.TopicPartition.Error)
+			} else {
+				log.Printf("Successfully pushed deployment status '%s' for ID '%s' to partition %d at offset %d",
+					status, deploymentId, m.TopicPartition.Partition, m.TopicPartition.Offset)
 			}
 		}
 	}()
-
-	// Produce all logs
-	for _, log := range logs {
-		logJSON, err := json.Marshal(log)
-		if err != nil {
-			fmt.Printf("Failed to marshal log %d: %v\n", log.LogID, err)
-			continue
-		}
-
-		key := fmt.Sprintf("%s:%s", log.DeploymentID, log.ProjectID)
-
-		err = p.Produce(&kafka.Message{
-			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-			Key:            []byte(key),
-			Value:          logJSON,
-		}, nil)
-
-		if err != nil {
-			fmt.Printf("Failed to produce log %d: %v\n", log.LogID, err)
-		}
-	}
-
-	// Wait for all messages to be delivered
-	p.Flush(15 * 1000)
-	return nil
-}
-
-func consumeLogs(topic string, config kafka.ConfigMap) {
-	// sets the consumer group ID and offset
-	config["group.id"] = "go-log-consumer-1"
-	config["auto.offset.reset"] = "earliest"
-
-	// creates a new consumer and subscribes to your topic
-	consumer, err := kafka.NewConsumer(&config)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to create consumer: %v\n", err)
-		return
-	}
-	defer consumer.Close()
-
-	consumer.SubscribeTopics([]string{topic}, nil)
-
-	run := true
-	for run {
-		e := consumer.Poll(1000)
-		switch ev := e.(type) {
-		case *kafka.Message:
-			// Unmarshal the log data
-			var log Log
-			if err := json.Unmarshal(ev.Value, &log); err != nil {
-				fmt.Printf("Failed to unmarshal log: %v\n", err)
-				continue
-			}
-
-			fmt.Printf("Consumed log from topic %s: ID=%d, Deployment=%s, Project=%s, Statement=%s, Time=%s\n",
-				*ev.TopicPartition.Topic, log.LogID, log.DeploymentID, log.ProjectID,
-				log.LogStatement, log.Timestamp.Format(time.RFC3339))
-
-		case kafka.Error:
-			fmt.Fprintf(os.Stderr, "%% Error: %v\n", ev)
-			run = false
-		}
-	}
 }

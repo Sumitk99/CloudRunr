@@ -2,9 +2,10 @@ services:
   build-server:
     build: .
     environment:
-      GIT_REPOSITORY_URL : https://github.com/fieldmarcel/react-fightclub.git
-      PROJECT_ID : fight
+      GIT_REPOSITORY_URL : https://github.com/kartikjaiswal99/RAG
+      PROJECT_ID : rag_system
       FRAMEWORK : REACT
-      DEFAULT_DIST_FOLDER : dist
-      DEPLOYMENT_ID : mindeeple
+      DEFAULT_DIST_FOLDER : build
+      DEPLOYMENT_ID : localid
+      ROOT_FOLDER : frontend
     image: sumitk999/build-server

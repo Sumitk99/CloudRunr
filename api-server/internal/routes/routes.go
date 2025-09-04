@@ -58,4 +58,10 @@ func SetupRoutes(router *gin.Engine, srv *service.Service) {
 		middleware.ValidateProjectDetailReq(srv),
 		handler.GetDeploymentListHandler(srv),
 	)
+
+	router.GET(
+		"/status/:deploy_id",
+		middleware.Authenticate(),
+		handler.DeploymentStatusHandler(srv),
+	)
 }

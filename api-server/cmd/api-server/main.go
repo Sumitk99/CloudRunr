@@ -77,8 +77,9 @@ func main() {
 		TS: ts,
 	}
 	newService := service.NewService(repo, ecsConfig)
+	kafkaConsumer, err := server.ReadConsumer()
+	server.Consumer(kafkaConsumer, repo)
 
 	routes.SetupRoutes(router, newService)
-
 	log.Fatal(router.Run(fmt.Sprintf(":%d", PORT)))
 }
