@@ -80,14 +80,14 @@ func (srv *Service) GetProjectDetailsService(ctx *gin.Context, projectId *string
 	return srv.Repo.GetProjectDetails(ctx, projectId)
 }
 
-func (srv *Service) LogRetrievalService(ctx *gin.Context, deploymentId string, offset int) ([]models.LogData, error) {
+func (srv *Service) LogRetrievalService(ctx *gin.Context, deploymentId string, cursor *int64) (*models.LogRetrievalResponse, error) {
 	userId := ctx.GetString("user_id")
 
-	logs, err := srv.Repo.LogRetrievalRepository(ctx, deploymentId, userId, offset)
+	response, err := srv.Repo.LogRetrievalRepository(ctx, deploymentId, userId, cursor)
 	if err != nil {
 		return nil, err
 	}
-	return logs, nil
+	return response, nil
 }
 
 func (srv *Service) GetUserProjectsService(ctx *gin.Context) ([]models.UserProjectListContent, error) {

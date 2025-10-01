@@ -58,12 +58,16 @@ type UserProjectListContent struct {
 }
 
 type LogData struct {
+	ID           int64     `json:"id,omitempty"`
 	LogStatement string    `json:"log_statement"`
 	Time         time.Time `json:"time"`
 }
 
 type LogRetrievalResponse struct {
-	Data []LogData `json:"data"`
+	Data       []LogData `json:"data"`
+	HasMore    bool      `json:"has_more"`
+	NextCursor *int64    `json:"next_cursor,omitempty"`
+	Status     string    `json:"status"`
 }
 
 type DeploymentDetails struct {

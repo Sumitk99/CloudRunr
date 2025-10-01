@@ -6,10 +6,11 @@ import (
 	"github.com/Sumitk99/CloudRunr/api-server/internal/service"
 	"github.com/go-playground/validator/v10"
 
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 var validate = validator.New()
@@ -135,12 +136,10 @@ func ValidateLogRetrievalReq(srv *service.Service) gin.HandlerFunc {
 			return
 		}
 
-		offset := c.Param("offset")
-		if offset == "" {
-			offset = "1"
-		}
+		cursor := c.Param("cursor")
+		// cursor is optional for first request
 		c.Set("deploy_id", deploymentId)
-		c.Set("offset", offset)
+		c.Set("cursor", cursor)
 		c.Next()
 	}
 }
