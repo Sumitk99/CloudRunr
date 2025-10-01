@@ -41,7 +41,7 @@ func ReadConfig() (*kafka.Consumer, error) {
 		line := strings.TrimSpace(scanner.Text())
 		if !strings.HasPrefix(line, "#") && len(line) != 0 {
 			kv := strings.Split(line, "=")
-			if len(kv) >= 2 { // Add safety check
+			if len(kv) >= 2 {
 				parameter := strings.TrimSpace(kv[0])
 				value := strings.TrimSpace(kv[1])
 				m[parameter] = value

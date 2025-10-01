@@ -50,41 +50,51 @@ func ReadConsumer() (*kafka.Consumer, error) {
 }
 
 func Consumer(consumer *kafka.Consumer, repo *repository.Repository) {
-	consumer.SubscribeTopics([]string{constants.BUILD_STATUS_KAFKA_TOPIC}, nil)
-	run := true
 
-	for run {
+	err := consumer.SubscribeTopics([]string{constants.BUILD_STATUS_KAFKA_TOPIC}, nil)
+	if err != nil {
+		log.Fatalf("Failed to subscribe to topics: %v", err)
+	}
+	fmt.Println("Kafka consumer started, waiting for messages...")
+	for {
 		e := consumer.Poll(1000)
+		if e == nil {
+			continue 
+		}
+
 		switch ev := e.(type) {
 		case *kafka.Message:
-
-			var deploymentID string
+			// Extract deployment ID
+			deploymentID := ""
 			if ev.Key != nil {
 				deploymentID = string(ev.Key)
 			} else {
-				fmt.Fprintf(os.Stderr, "Message has no key (deployment ID)\n")
+				log.Println("Message has no key (deployment ID), skipping")
 				continue
 			}
 
-			var status string
+			status := ""
 			if ev.Value != nil {
 				status = string(ev.Value)
 			} else {
-				fmt.Fprintf(os.Stderr, "Message has no value (status)\n")
+				log.Println("Message has no value (status), skipping")
 				continue
 			}
-			err := repo.UpdateDeploymentStatus(deploymentID, status)
-
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Failed to insert deployment status: %v\n", err)
+			fmt.Println("Received message from Kafka : ", deploymentID, " : ", status)
+			if err := repo.UpdateDeploymentStatus(deploymentID, status); err != nil {
+				log.Printf("Failed to update deployment status for %s: %v", deploymentID, err)
 				continue
 			}
 
-			fmt.Println("")
+			log.Printf("Updated deployment %s with status %s", deploymentID, status)
 
 		case kafka.Error:
-			fmt.Fprintf(os.Stderr, "%% Error: %v\n", ev)
-			run = false
+			// Non-fatal errors (e.g., broker issues) should usually not kill the consumer
+			log.Printf("Kafka error: %v", ev)
+			// If you want to stop on fatal errors only:
+			if ev.IsFatal() {
+				log.Fatalf("Fatal Kafka error: %v", ev)
+			}
 		}
 	}
 }

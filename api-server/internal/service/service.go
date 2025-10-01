@@ -25,7 +25,7 @@ func (srv *Service) NewProjectService(ctx *gin.Context, project *models.NewProje
 	newDeployId := ksuid.New().String()
 	go func() {
 		_ = srv.Repo.NewProjectRepository(ctx, project)
-		_ = srv.Repo.CreateNewDeployment(ctx, *project.ProjectID, newDeployId, constants.STATUS_QUEUED)
+		_ = srv.Repo.CreateNewDeployment(ctx, *project.ProjectID, newDeployId, constants.STATUS_IN_PROGRESS)
 	}()
 	deploymentConfig := &models.NewDeployment{
 		DeploymentID: &newDeployId,

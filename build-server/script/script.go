@@ -2,10 +2,6 @@ package script
 
 import (
 	"fmt"
-	"github.com/Sumitk99/build-server/constants"
-	"github.com/Sumitk99/build-server/helper"
-	"github.com/Sumitk99/build-server/server"
-	_ "github.com/aws/aws-sdk-go/service/s3"
 	"io"
 	"log"
 	"os"
@@ -13,6 +9,11 @@ import (
 	"path"
 	"path/filepath"
 	"time"
+
+	"github.com/Sumitk99/build-server/constants"
+	"github.com/Sumitk99/build-server/helper"
+	"github.com/Sumitk99/build-server/server"
+	_ "github.com/aws/aws-sdk-go/service/s3"
 )
 
 type BuildConfig struct {
@@ -159,11 +160,19 @@ func Script(srv *server.Server, cfg BuildConfig) {
 	files, err := helper.GetFilePaths(DistFolderPath)
 	err = srv.UploadToS3(DistFolderPath, cfg.ProjectID, files)
 
-	srv.PushDeploymentStatusToKafka(cfg.DeploymentID, constants.STATUS_DEPLOYED)
-
 	if err != nil {
 		log.Println("Error uploading files to S3:", err)
+		// Use synchronous version to ensure delivery before exit
+		if err := srv.PushDeploymentStatusToKafkaSync(cfg.DeploymentID, constants.STATUS_FAILED); err != nil {
+			log.Printf("Failed to push FAILED status: %v", err)
+		}
 		return
 	}
 
+	if err := srv.PushDeploymentStatusToKafkaSync(cfg.DeploymentID, constants.STATUS_DEPLOYED); err != nil {
+		log.Printf("Failed to push DEPLOYED status: %v", err)
+		return
+	}
+
+	log.Println("Build server execution completed successfully")
 }

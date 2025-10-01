@@ -3,9 +3,9 @@ services:
     build: .
     environment:
       GIT_REPOSITORY_URL : https://github.com/kartikjaiswal99/RAG
-      PROJECT_ID : rag_system
+      PROJECT_ID : karbar
       FRAMEWORK : REACT
       DEFAULT_DIST_FOLDER : build
-      DEPLOYMENT_ID : localid
+      DEPLOYMENT_ID : lolo
       ROOT_FOLDER : frontend
     image: sumitk999/build-server

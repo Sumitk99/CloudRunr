@@ -1,7 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"sync"
+	"syscall"
+	"time"
+
 	"github.com/Sumitk99/CloudRunr/api-server/internal/repository"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/routes"
 	"github.com/Sumitk99/CloudRunr/api-server/internal/server"
@@ -9,12 +18,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"os"
-	"strings"
-	"time"
+
+	"log"
 
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 const PORT = 8080
@@ -78,8 +85,72 @@ func main() {
 	}
 	newService := service.NewService(repo, ecsConfig)
 	kafkaConsumer, err := server.ReadConsumer()
-	server.Consumer(kafkaConsumer, repo)
+	if err != nil {
+		log.Fatalf("Failed to create Kafka consumer: %v", err)
+	}
 
 	routes.SetupRoutes(router, newService)
-	log.Fatal(router.Run(fmt.Sprintf(":%d", PORT)))
+
+	// Create HTTP server
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", PORT),
+		Handler: router,
+	}
+
+	// Setup graceful shutdown
+	var wg sync.WaitGroup
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	// Start Kafka consumer in a goroutine
+	wg.Add(1)
+	consumerDone := make(chan bool)
+	go func() {
+		defer wg.Done()
+		server.Consumer(kafkaConsumer, repo)
+		consumerDone <- true
+	}()
+
+	// Start HTTP server in a goroutine
+	go func() {
+		log.Printf("Server starting on port %d", PORT)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Failed to start server: %v", err)
+		}
+	}()
+
+	// Wait for interrupt signal
+	<-quit
+	log.Println("Shutting down server...")
+
+	// Create context with timeout for shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// Shutdown HTTP server
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Printf("Server forced to shutdown: %v", err)
+	}
+
+	// Close Kafka consumer
+	log.Println("Closing Kafka consumer...")
+	if err := kafkaConsumer.Close(); err != nil {
+		log.Printf("Error closing Kafka consumer: %v", err)
+	}
+
+	// Wait for consumer goroutine to finish or timeout
+	done := make(chan bool)
+	go func() {
+		wg.Wait()
+		done <- true
+	}()
+
+	select {
+	case <-done:
+		log.Println("All goroutines finished")
+	case <-time.After(10 * time.Second):
+		log.Println("Timeout waiting for consumer to finish")
+	}
+
+	log.Println("Server exited")
 }

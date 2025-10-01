@@ -5,6 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+
 	"github.com/Sumitk99/build-server/constants"
 	"github.com/Sumitk99/build-server/helper"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -12,10 +17,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
-	"io"
-	"log"
-	"os"
-	"path/filepath"
 
 	"strings"
 	"sync"
@@ -201,6 +202,7 @@ func (srv *Server) LogProducer(topic string, log Log) error {
 }
 
 func (srv *Server) PushDeploymentStatusToKafka(deploymentId, status string) {
+	log.Println("Pushing deployment status to Kafka:", deploymentId, status)
 	if deploymentId == "" || status == "" {
 		log.Println("deploymentId or status is nil, skipping push")
 		return
@@ -217,7 +219,6 @@ func (srv *Server) PushDeploymentStatusToKafka(deploymentId, status string) {
 		Value: []byte(status),
 	}
 
-	// Create delivery channel for confirmation
 	deliveryChan := make(chan kafka.Event, 1)
 	defer close(deliveryChan)
 
@@ -238,4 +239,51 @@ func (srv *Server) PushDeploymentStatusToKafka(deploymentId, status string) {
 			}
 		}
 	}()
+}
+
+// PushDeploymentStatusToKafkaSync pushes deployment status and waits for delivery confirmation
+func (srv *Server) PushDeploymentStatusToKafkaSync(deploymentId, status string) error {
+	log.Println("Pushing deployment status to Kafka (sync):", deploymentId, status)
+	if deploymentId == "" || status == "" {
+		log.Println("deploymentId or status is nil, skipping push")
+		return fmt.Errorf("deploymentId or status is empty")
+	}
+
+	topic := constants.BUILD_STATUS_KAFKA_TOPIC
+
+	msg := &kafka.Message{
+		TopicPartition: kafka.TopicPartition{
+			Topic:     &topic,
+			Partition: kafka.PartitionAny,
+		},
+		Key:   []byte(deploymentId),
+		Value: []byte(status),
+	}
+
+	deliveryChan := make(chan kafka.Event, 1)
+	defer close(deliveryChan)
+
+	err := srv.KafkaProducer.Produce(msg, deliveryChan)
+	if err != nil {
+		log.Printf("Failed to produce message for deployment %s: %v", deploymentId, err)
+		return fmt.Errorf("failed to produce message: %v", err)
+	}
+
+	select {
+	case e := <-deliveryChan:
+		if m, ok := e.(*kafka.Message); ok {
+			if m.TopicPartition.Error != nil {
+				log.Printf("Delivery failed for deployment %s: %v", deploymentId, m.TopicPartition.Error)
+				return fmt.Errorf("delivery failed: %v", m.TopicPartition.Error)
+			} else {
+				log.Printf("Successfully pushed deployment status '%s' for ID '%s' to partition %d at offset %d",
+					status, deploymentId, m.TopicPartition.Partition, m.TopicPartition.Offset)
+				return nil
+			}
+		}
+		return fmt.Errorf("unexpected event type")
+	case <-time.After(10 * time.Second):
+		log.Printf("Timeout waiting for delivery confirmation for deployment %s", deploymentId)
+		return fmt.Errorf("timeout waiting for delivery confirmation")
+	}
 }
