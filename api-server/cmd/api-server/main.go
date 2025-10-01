@@ -119,26 +119,21 @@ func main() {
 		}
 	}()
 
-	// Wait for interrupt signal
 	<-quit
 	log.Println("Shutting down server...")
 
-	// Create context with timeout for shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Shutdown HTTP server
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Printf("Server forced to shutdown: %v", err)
 	}
 
-	// Close Kafka consumer
 	log.Println("Closing Kafka consumer...")
 	if err := kafkaConsumer.Close(); err != nil {
 		log.Printf("Error closing Kafka consumer: %v", err)
 	}
 
-	// Wait for consumer goroutine to finish or timeout
 	done := make(chan bool)
 	go func() {
 		wg.Wait()
